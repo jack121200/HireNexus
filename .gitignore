@@ -1,0 +1,65 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.log.*
+logs/
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+.vite/
+coverage/
+*.tsbuildinfo
+.eslintcache
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Python / Backend
+.venv*/
+backend/.venv*/
+venv*/
+backend/venv*/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+.coverage
+coverage.xml
+htmlcov/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data / DB
+*.sqlite3
+*.db
+
+# Secrets
+*.pem
+*.key

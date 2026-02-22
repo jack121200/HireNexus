@@ -1,0 +1,18 @@
+﻿Senior Backend Engineer
+
+We are hiring a Senior Backend Engineer to build scalable APIs and distributed systems. You will design REST APIs, optimize database performance, and improve reliability.
+
+Responsibilities
+- Build and maintain microservices using Python and FastAPI.
+- Design REST APIs backed by MySQL and Redis.
+- Use Docker for packaging and deployments on AWS.
+- Lead debugging and performance optimization efforts.
+
+Required Skills
+Python, FastAPI, MySQL, Redis, Docker, AWS, Testing, System Design
+
+Minimum Experience
+4 years
+
+Education
+Bachelor's degree in Computer Science or related field.

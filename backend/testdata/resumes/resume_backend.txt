@@ -1,0 +1,27 @@
+﻿John Doe
+Backend Engineer
+
+Summary
+Backend engineer focused on Python, FastAPI, and distributed systems. I have 6 years of experience building APIs and data-intensive services.
+
+Skills
+Python, FastAPI, MySQL, Redis, Docker, AWS, System Design, Testing, CI/CD
+
+Experience
+Senior Backend Engineer - ExampleCorp
+2021 - 2025
+- Built microservices in Python and FastAPI serving 2M requests per day.
+- Designed REST APIs backed by MySQL and Redis with strong observability.
+- Improved latency by 35% through caching, indexing, and profiling.
+
+Backend Engineer - DataWorks
+2018 - 2021
+- Implemented data pipelines with Python, SQL, and Docker.
+- Led debugging efforts for production incidents and improved reliability.
+
+Projects
+- Resume Intelligence Service: built a spaCy-based parser and TF-IDF matcher.
+- Interview Coach: created mock interviews with rubric-based scoring.
+
+Education
+Bachelor of Technology in Computer Science
