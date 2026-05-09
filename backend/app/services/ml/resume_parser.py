@@ -12,7 +12,15 @@ from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PyPDF2 import PdfReader
+from io import BytesIO
+
+try:
+    import pdfplumber  # Better multi-column extraction than PyPDF2
+    _HAS_PDFPLUMBER = True
+except ImportError:
+    _HAS_PDFPLUMBER = False
+    from PyPDF2 import PdfReader  # Fallback
+
 from docx import Document
 
 from .config import (
@@ -88,50 +96,56 @@ def clear_caches() -> None:
 
 
 def _read_pdf(file_path: Path, logger: Logger) -> str:
-    """Read text from PDF file.
+    """Read text from PDF using pdfplumber (better multi-column) with PyPDF2 fallback."""
+    if _HAS_PDFPLUMBER:
+        return _read_pdf_pdfplumber(file_path, logger)
+    return _read_pdf_pypdf2(file_path, logger)
 
-    Args:
-        file_path: Path to PDF file
-        logger: Logger instance
 
-    Returns:
-        Extracted text content
-
-    Raises:
-        FileReadError: If PDF cannot be read
-    """
+def _read_pdf_pdfplumber(file_path: Path, logger: Logger) -> str:
+    """Extract text with pdfplumber — handles multi-column resumes correctly."""
     try:
+        import pdfplumber
+        pages_text: list[str] = []
+        with pdfplumber.open(str(file_path)) as pdf:
+            for page in pdf.pages:
+                text = page.extract_text(
+                    x_tolerance=3, y_tolerance=3
+                )
+                if text:
+                    pages_text.append(text)
+        if not pages_text:
+            raise FileReadError("No text extracted via pdfplumber", {"path": str(file_path)})
+        raw = "\n".join(pages_text)
+        logger.debug("pdf_extracted_pdfplumber", extra={"chars": len(raw)})
+        return raw
+    except FileReadError:
+        raise
+    except Exception as exc:
+        logger.warning("pdfplumber_failed_fallback", extra={"error": str(exc)})
+        return _read_pdf_pypdf2(file_path, logger)
+
+
+def _read_pdf_pypdf2(file_path: Path, logger: Logger) -> str:
+    """PyPDF2 fallback PDF reader."""
+    try:
+        from PyPDF2 import PdfReader
         reader = PdfReader(str(file_path))
         pages_text: list[str] = []
-
         for page_num, page in enumerate(reader.pages):
             try:
                 text = page.extract_text()
                 if text:
                     pages_text.append(text)
             except Exception as exc:
-                logger.warning(
-                    "pdf_page_extract_failed",
-                    page=page_num,
-                    error=str(exc)
-                )
-                continue
-
+                logger.warning("pdf_page_extract_failed", extra={"page": page_num, "error": str(exc)})
         if not pages_text:
-            raise FileReadError(
-                "No text could be extracted from PDF",
-                {"path": str(file_path)}
-            )
-
+            raise FileReadError("No text could be extracted from PDF", {"path": str(file_path)})
         return "\n".join(pages_text)
-
     except Exception as exc:
         if isinstance(exc, FileReadError):
             raise
-        raise FileReadError(
-            f"Failed to read PDF: {exc}",
-            {"path": str(file_path)}
-        ) from exc
+        raise FileReadError(f"Failed to read PDF: {exc}", {"path": str(file_path)}) from exc
 
 
 def _read_docx(file_path: Path, logger: Logger) -> str:
@@ -604,7 +618,10 @@ def parse_resume(
         projects = _extract_projects(sections, raw_text)
         highlights = _extract_highlights(raw_text)
 
-        return ParsedResume(
+        # Enrich with Groq structured parsing (async/optional — fails silently)
+        groq_data = _parse_with_groq(normalized, logger)
+
+        parsed = ParsedResume(
             raw_text=normalized,
             skills=tuple(skills),
             keywords=tuple(keywords),
@@ -613,7 +630,9 @@ def parse_resume(
             sections=sections,
             projects=tuple(projects),
             highlights=tuple(highlights),
+            groq_structured=groq_data,
         )
+        return parsed
 
     except Exception as exc:
         logger.error(
@@ -625,3 +644,101 @@ def parse_resume(
             f"Failed to parse resume: {exc}",
             {"path": str(file_path)}
         ) from exc
+
+
+# ── Groq Structured Parsing ───────────────────────────────────────────────────
+
+_GROQ_BASE = "https://api.groq.com/openai/v1"
+_GROQ_RESUME_SCHEMA = """You are a resume parsing expert.
+Extract ALL information. Return ONLY valid JSON — no markdown, no code fences, no explanation.
+
+{
+  "full_name": "string or null",
+  "email": "string or null",
+  "phone": "string or null",
+  "location": "string or null",
+  "linkedin": "string or null",
+  "github": "string or null",
+  "total_experience_years": 0,
+  "current_role": "string or null",
+  "professional_summary": "string or null",
+  "skills": {
+    "technical": ["programming languages, frameworks, libraries"],
+    "tools": ["Git, Docker, Postman etc"],
+    "databases": ["MySQL, MongoDB etc"],
+    "cloud": ["AWS, GCP, Azure etc"]
+  },
+  "experience": [
+    {
+      "company": "string",
+      "role": "string",
+      "start_date": "string",
+      "end_date": "string or Present",
+      "responsibilities": ["bullet point 1"]
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.Tech / MCA etc",
+      "field": "Computer Science etc",
+      "institution": "string",
+      "year_of_passing": null
+    }
+  ],
+  "projects": [
+    {
+      "name": "string",
+      "description": "1-2 sentences",
+      "tech_stack": ["technologies used"]
+    }
+  ],
+  "certifications": ["cert name and issuer"],
+  "achievements": ["hackathons, awards"]
+}"""
+
+
+def _parse_with_groq(raw_text: str, logger: Logger) -> dict:
+    """
+    Call Groq llama-3.1-8b-instant to get structured resume data.
+    Returns empty dict on any failure — heuristic parsing is the fallback.
+    ~$0.00022 per call, ~1-2s. Completely optional enrichment.
+    """
+    import os
+    import json
+
+    api_key = os.getenv("GROQ_API_KEY", "")
+    model = os.getenv("GROQ_MODEL_PARSING", "llama-3.1-8b-instant")
+
+    if not api_key:
+        logger.debug("groq_resume_parse: no api key, skipping")
+        return {}
+
+    try:
+        import httpx
+
+        payload = {
+            "model": model,
+            "temperature": 0.1,
+            "max_tokens": 2000,
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {"role": "system", "content": _GROQ_RESUME_SCHEMA},
+                {"role": "user", "content": f"Parse this resume:\n\n{raw_text[:8000]}"},
+            ],
+        }
+        with httpx.Client(timeout=25) as client:
+            resp = client.post(
+                f"{_GROQ_BASE}/chat/completions",
+                json=payload,
+                headers={"Authorization": f"Bearer {api_key}"},
+            )
+            resp.raise_for_status()
+            content = resp.json()["choices"][0]["message"]["content"]
+            data = json.loads(content)
+            logger.info("groq_resume_parse: success", extra={"name": data.get("full_name", "?")})
+            return data
+
+    except Exception as exc:
+        logger.warning("groq_resume_parse: failed (non-fatal)", extra={"error": str(exc)})
+        return {}
+

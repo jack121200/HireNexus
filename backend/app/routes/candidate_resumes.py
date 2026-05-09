@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
@@ -19,6 +19,10 @@ from app.schemas.resume import (
     ResumeUploadResponse,
 )
 from app.services.ml import EligibilityResult
+from app.services.ml.score_cache import (
+    invalidate_candidate_scores,
+    rescore_candidate_vs_all_jobs,
+)
 from app.services.resume_service import (
     analyze_resume_against_jd,
     create_resume,
@@ -52,11 +56,20 @@ def get_resumes(current_user: User = Depends(get_current_candidate), db: Session
 
 @router.post("", response_model=ResumeUploadResponse)
 def upload_resume(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_candidate),
     db: Session = Depends(get_db),
 ) -> ResumeUploadResponse:
     resume = create_resume(db, user=current_user, file=file)
+    db.commit()
+    db.refresh(resume)
+    # Background: recompute match scores for this candidate vs all open jobs
+    background_tasks.add_task(
+        rescore_candidate_vs_all_jobs,
+        candidate_id=current_user.id,
+        db_session_factory=get_db,
+    )
     return ResumeUploadResponse(resume=_resume_response(resume))
 
 
@@ -91,11 +104,20 @@ def download_resume(
 @router.post("/{resume_id}/set-primary", response_model=ResumeUploadResponse)
 def set_primary(
     resume_id: int,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_candidate),
     db: Session = Depends(get_db),
 ) -> ResumeUploadResponse:
     resume = get_resume(db, resume_id=resume_id, user=current_user)
     resume = set_primary_resume(db, resume=resume)
+    db.commit()
+    # Invalidate old cached scores then recompute with new primary
+    invalidate_candidate_scores(current_user.id)
+    background_tasks.add_task(
+        rescore_candidate_vs_all_jobs,
+        candidate_id=current_user.id,
+        db_session_factory=get_db,
+    )
     return ResumeUploadResponse(resume=_resume_response(resume))
 
 

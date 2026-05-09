@@ -33,6 +33,8 @@ class Job(Base, TimestampMixin):
 
     required_skills: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
     extracted_required_skills: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False)
+    preferred_skills: Mapped[list[str]] = mapped_column(JSON, default=list, nullable=False, server_default="'[]'")
+    parsed_jd: Mapped[dict] = mapped_column(JSON, default=dict, nullable=True)
 
     minimum_experience_years: Mapped[float] = mapped_column(Float, default=0.0, nullable=False, index=True)
     education_requirement: Mapped[str | None] = mapped_column(String(255), nullable=True)

@@ -10,9 +10,29 @@ import { Select } from "../../components/Select";
 import { Input } from "../../components/Input";
 import { apiFetch } from "../../lib/api";
 
-type Resume = {
-  id: number;
-  file_name: string;
+type Resume = { id: number; file_name: string };
+
+type SkillGap = {
+  skill: string;
+  gap_type: "hard" | "soft";
+  suggestion?: {
+    time_to_learn: string;
+    difficulty: string;
+    resources: string[];
+    resume_tip: string;
+    personalized_note?: string | null;
+  };
+};
+
+type Eligibility = {
+  eligibility_percentage: number;
+  skill_match_percentage: number;
+  experience_match_percentage: number;
+  education_match_percentage: number;
+  missing_skills: string[];
+  required_skills: string[];
+  suggestions: string[];
+  skill_gaps?: SkillGap[];
 };
 
 type JobItem = {
@@ -24,41 +44,206 @@ type JobItem = {
   employment_type?: string | null;
   description: string;
   required_skills: string[];
+  preferred_skills?: string[];
   minimum_experience_years: number;
-  source?: string | null;
-  external?: boolean;
-  apply_url?: string | null;
-  eligibility: {
-    eligibility_percentage: number;
-    missing_skills: string[];
-  } | null;
-  application?: {
-    id: number;
-    status: string;
-    eligibility_percentage: number;
-  } | null;
+  eligibility: Eligibility | null;
+  application?: { id: number; status: string; eligibility_percentage: number } | null;
 };
 
 type JobBrowseResponse = {
   items: JobItem[];
-  meta: {
-    page: number;
-    page_size: number;
-    total: number;
-    total_pages: number;
-  };
+  meta: { page: number; page_size: number; total: number; total_pages: number };
 };
 
-type Filters = {
-  search: string;
-  location: string;
-  employment: string;
-  skills: string;
-  minExperience: string;
-  minEligibility: string;
-  remoteOnly: boolean;
-};
+// ── Eligibility badge helper ──────────────────────────────────────────────────
+function eligibilityMeta(pct: number) {
+  if (pct >= 75) return { label: "Strong Match", color: "#10b981", bg: "rgba(16,185,129,0.1)", border: "rgba(16,185,129,0.3)" };
+  if (pct >= 55) return { label: "Good Match", color: "#3b82f6", bg: "rgba(59,130,246,0.1)", border: "rgba(59,130,246,0.3)" };
+  if (pct >= 35) return { label: "Partial Match", color: "#f59e0b", bg: "rgba(245,158,11,0.1)", border: "rgba(245,158,11,0.3)" };
+  return { label: "Low Match", color: "#ef4444", bg: "rgba(239,68,68,0.1)", border: "rgba(239,68,68,0.3)" };
+}
 
+// ── Score bar ─────────────────────────────────────────────────────────────────
+function ScoreBar({ label, value }: { label: string; value: number }) {
+  const color = value >= 75 ? "#10b981" : value >= 50 ? "#3b82f6" : value >= 30 ? "#f59e0b" : "#ef4444";
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, fontSize: 12, color: "var(--color-textMuted)" }}>
+        <span>{label}</span>
+        <span style={{ fontWeight: 700, color }}>{value.toFixed(0)}%</span>
+      </div>
+      <div style={{ background: "var(--color-panelMuted)", borderRadius: 99, height: 6, overflow: "hidden" }}>
+        <div style={{ width: `${value}%`, background: color, height: "100%", borderRadius: 99, transition: "width 0.6s ease" }} />
+      </div>
+    </div>
+  );
+}
+
+// ── Expandable Job Card ───────────────────────────────────────────────────────
+function JobCard({ job, resumeId }: { job: JobItem; resumeId: number | null }) {
+  const [expanded, setExpanded] = useState(false);
+  const elig = job.eligibility;
+  const meta = elig ? eligibilityMeta(elig.eligibility_percentage) : null;
+
+  // Which required skills candidate has vs missing
+  const matchedSkills = elig
+    ? job.required_skills.filter(s => !elig.missing_skills.map(m => m.toLowerCase()).includes(s.toLowerCase()))
+    : [];
+
+  return (
+    <Card variant="surface" className="card-interactive" style={{ padding: 0, overflow: "hidden" }}>
+      {/* Main clickable row */}
+      <Link
+        to={`/candidate/jobs/${job.id}?resume_id=${resumeId ?? ""}`}
+        className="block block-link group"
+        style={{ padding: "20px 24px" }}
+      >
+        <div style={{ display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
+          {/* Left: title + meta */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+              <h3 style={{ fontSize: 17, fontWeight: 700, margin: 0 }} className="text-text group-hover:text-accent transition-colors">
+                {job.title}
+              </h3>
+              {job.application && <Badge tone="success">Applied</Badge>}
+            </div>
+            <div style={{ fontSize: 13, color: "var(--color-textMuted)", marginBottom: 10 }}>
+              <span style={{ color: "var(--color-text)", fontWeight: 600 }}>{job.company || "Company"}</span>
+              {" · "}{job.location || "Remote"}{" · "}{job.employment_type || "Full-time"}
+            </div>
+            <p style={{ fontSize: 13, color: "var(--color-textDim)", margin: "0 0 12px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+              {job.description}
+            </p>
+
+            {/* Skill chips */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {matchedSkills.slice(0, 4).map(s => (
+                <span key={s} style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", color: "#10b981", borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>
+                  ✓ {s}
+                </span>
+              ))}
+              {elig && elig.missing_skills.slice(0, 3).map(s => (
+                <span key={s} style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)", color: "#ef4444", borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>
+                  ✗ {s}
+                </span>
+              ))}
+              {!elig && job.required_skills.slice(0, 5).map(s => (
+                <span key={s} style={{ background: "var(--color-panelMuted)", border: "1px solid var(--color-border)", color: "var(--color-textMuted)", borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 500 }}>
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: match score */}
+          <div style={{ textAlign: "right", minWidth: 120, flexShrink: 0 }}>
+            {meta && elig ? (
+              <div style={{ marginBottom: 8 }}>
+                <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: "var(--color-textDim)", marginBottom: 4 }}>Match Score</div>
+                <div style={{
+                  display: "inline-block", padding: "6px 14px", borderRadius: 10,
+                  background: meta.bg, border: `1px solid ${meta.border}`, color: meta.color,
+                  fontWeight: 800, fontSize: 22,
+                }}>
+                  {elig.eligibility_percentage.toFixed(0)}%
+                </div>
+                <div style={{ fontSize: 11, color: meta.color, marginTop: 4, fontWeight: 600 }}>{meta.label}</div>
+              </div>
+            ) : (
+              <div style={{ fontSize: 11, color: "var(--color-textDim)" }}>Select resume to see fit</div>
+            )}
+            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-accent)", display: "inline-flex", alignItems: "center", gap: 3 }} className="group-hover:translate-x-1 transition-transform">
+              View details →
+            </span>
+          </div>
+        </div>
+      </Link>
+
+      {/* Expandable analysis panel */}
+      {elig && (
+        <>
+          <button
+            onClick={() => setExpanded(x => !x)}
+            style={{
+              width: "100%", padding: "8px 24px", background: "var(--color-panelMuted)",
+              borderTop: "1px solid var(--color-border)", cursor: "pointer",
+              fontSize: 12, color: "var(--color-textMuted)", fontWeight: 600,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+              border: "none", outline: "none",
+            }}
+          >
+            <span>{expanded ? "▲" : "▼"}</span>
+            {expanded ? "Hide Analysis" : "Show Full Analysis"}
+          </button>
+
+          {expanded && (
+            <div style={{ padding: "20px 24px", borderTop: "1px solid var(--color-border)" }}>
+              {/* Score Bars */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12, color: "var(--color-text)" }}>Score Breakdown</div>
+                <ScoreBar label="Skills Match" value={elig.skill_match_percentage} />
+                <ScoreBar label="Experience" value={elig.experience_match_percentage} />
+                <ScoreBar label="Education" value={elig.education_match_percentage} />
+              </div>
+
+              {/* Gap Analysis */}
+              {elig.skill_gaps && elig.skill_gaps.length > 0 && (
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12, color: "var(--color-text)" }}>
+                    Skill Gaps &amp; How to Close Them
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {elig.skill_gaps.slice(0, 4).map((gap, i) => (
+                      <div key={i} style={{
+                        background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.15)",
+                        borderRadius: 10, padding: "12px 16px",
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6, flexWrap: "wrap", gap: 4 }}>
+                          <span style={{ fontWeight: 700, color: "var(--color-text)", fontSize: 13 }}>{gap.skill}</span>
+                          <span style={{ fontSize: 11, background: "rgba(239,68,68,0.1)", color: "#ef4444", borderRadius: 99, padding: "2px 8px", fontWeight: 600 }}>Missing</span>
+                        </div>
+                        {gap.suggestion && (
+                          <div style={{ fontSize: 12, color: "var(--color-textMuted)" }}>
+                            {gap.suggestion.personalized_note && (
+                              <div style={{ color: "#10b981", marginBottom: 4, fontWeight: 500 }}>{gap.suggestion.personalized_note}</div>
+                            )}
+                            <div>⏱ <strong>Time to learn:</strong> {gap.suggestion.time_to_learn}</div>
+                            <div style={{ marginTop: 3 }}>📝 <strong>Resume tip:</strong> {gap.suggestion.resume_tip}</div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {elig.skill_gaps.length > 4 && (
+                    <Link to={`/candidate/jobs/${job.id}?resume_id=${resumeId ?? ""}`} style={{ fontSize: 12, color: "var(--color-accent)", display: "block", marginTop: 8 }}>
+                      View {elig.skill_gaps.length - 4} more gaps with full learning resources →
+                    </Link>
+                  )}
+                </div>
+              )}
+
+              {/* Preferred skills */}
+              {job.preferred_skills && job.preferred_skills.length > 0 && (
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, color: "var(--color-text)" }}>Preferred (Bonus) Skills</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {job.preferred_skills.map(s => (
+                      <span key={s} style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.2)", color: "#3b82f6", borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 500 }}>
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </Card>
+  );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
 export const CandidateJobs = () => {
   const pageSize = 10;
   const [resumes, setResumes] = useState<Resume[]>([]);
@@ -66,273 +251,117 @@ export const CandidateJobs = () => {
   const [jobs, setJobs] = useState<JobItem[]>([]);
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState<JobBrowseResponse["meta"] | null>(null);
-  const [filters, setFilters] = useState<Filters>({
-    search: "",
-    location: "",
-    employment: "",
-    skills: "",
-    minExperience: "",
-    minEligibility: "",
-    remoteOnly: false,
-  });
+  const [filters, setFilters] = useState({ search: "", location: "", employment: "", skills: "", minExperience: "", minEligibility: "", remoteOnly: false });
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const loadResumes = () => {
+  useEffect(() => {
     apiFetch<Resume[]>("/api/candidate/resumes")
       .then((data) => {
         setResumes(data);
-        if (!selectedResumeId && data.length) {
-          setSelectedResumeId(data[0].id);
-        }
+        if (data.length) setSelectedResumeId(data[0].id);
       })
       .catch((err) => setError((err as Error).message));
-  };
-
-  const loadJobs = (resumeId: number | null, pageNumber: number) => {
-    const params = new URLSearchParams();
-    if (resumeId) {
-      params.set("resume_id", String(resumeId));
-    }
-    params.set("page", String(pageNumber));
-    params.set("page_size", String(pageSize));
-    const query = params.toString() ? `?${params.toString()}` : "";
-    setError(null);
-    apiFetch<JobBrowseResponse>(`/api/candidate/jobs${query}`)
-      .then((data) => {
-        setJobs(data.items);
-        setMeta(data.meta);
-      })
-      .catch((err) => setError((err as Error).message));
-  };
-
-  useEffect(() => {
-    loadResumes();
   }, []);
 
   useEffect(() => {
-    loadJobs(selectedResumeId, page);
+    const loadJobs = async () => {
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (selectedResumeId) params.set("resume_id", String(selectedResumeId));
+      params.set("page", String(page));
+      params.set("page_size", String(pageSize));
+
+      try {
+        const data = await apiFetch<JobBrowseResponse>(`/api/candidate/jobs?${params.toString()}`);
+        setJobs(data.items);
+        setMeta(data.meta);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadJobs();
   }, [selectedResumeId, page]);
-
-  useEffect(() => {
-    setPage((prev) => (prev === 1 ? prev : 1));
-  }, [selectedResumeId]);
-
-  useEffect(() => {
-    if (meta && page > meta.total_pages && meta.total_pages > 0) {
-      setPage(meta.total_pages);
-    }
-  }, [meta, page]);
 
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
-      const searchMatch = filters.search
-        ? job.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-          job.description.toLowerCase().includes(filters.search.toLowerCase())
-        : true;
-      const locationMatch = filters.location
-        ? (job.location || "").toLowerCase().includes(filters.location.toLowerCase())
-        : true;
-      const employmentMatch = filters.employment
-        ? (job.employment_type || "").toLowerCase().includes(filters.employment.toLowerCase())
-        : true;
-      const skillMatch = filters.skills
-        ? job.required_skills.join(" ").toLowerCase().includes(filters.skills.toLowerCase())
-        : true;
-      const experienceMatch = filters.minExperience
-        ? job.minimum_experience_years >= Number(filters.minExperience)
-        : true;
-      const eligibilityMatch = filters.minEligibility
-        ? (job.eligibility?.eligibility_percentage ?? 0) >= Number(filters.minEligibility)
-        : true;
-      const remoteMatch = filters.remoteOnly
-        ? (job.location || "").toLowerCase().includes("remote")
-        : true;
-      return (
-        searchMatch &&
-        locationMatch &&
-        employmentMatch &&
-        skillMatch &&
-        experienceMatch &&
-        eligibilityMatch &&
-        remoteMatch
-      );
+      const s = filters.search.toLowerCase();
+      if (s && !(job.title.toLowerCase().includes(s) || job.description.toLowerCase().includes(s))) return false;
+      const l = filters.location.toLowerCase();
+      if (l && !(job.location || "").toLowerCase().includes(l)) return false;
+      const sk = filters.skills.toLowerCase();
+      if (sk && !job.required_skills.join(" ").toLowerCase().includes(sk)) return false;
+      if (filters.minExperience && job.minimum_experience_years < Number(filters.minExperience)) return false;
+      if (filters.minEligibility && (job.eligibility?.eligibility_percentage ?? 0) < Number(filters.minEligibility)) return false;
+      if (filters.remoteOnly && !(job.location || "").toLowerCase().includes("remote")) return false;
+      return true;
     });
   }, [jobs, filters]);
 
   const totalPages = meta?.total_pages ?? 1;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       <PageHeader
         kicker="Candidate Suite"
         title="Job Discovery"
-        subtitle="Browse roles, review eligibility, and view full job details before applying."
+        subtitle="Browse roles, see your AI match score, and get a personalised gap analysis before applying."
         actions={
-          <Select
-            label="Resume"
-            value={selectedResumeId ?? undefined}
-            onChange={(event) => setSelectedResumeId(Number(event.target.value))}
-          >
-            {resumes.map((resume) => (
-              <option key={resume.id} value={resume.id}>
-                {resume.file_name}
-              </option>
-            ))}
-          </Select>
+          <div style={{ minWidth: 200 }}>
+            <Select value={selectedResumeId ?? undefined} onChange={(e) => setSelectedResumeId(Number(e.target.value))}>
+              <option disabled value={undefined}>Select Resume for Matching</option>
+              {resumes.map((r) => <option key={r.id} value={r.id}>{r.file_name}</option>)}
+            </Select>
+          </div>
         }
       />
 
-      <Card variant="glass" className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-3">
-          <Input
-            label="Role or keyword"
-            value={filters.search}
-            onChange={(event) => setFilters((prev) => ({ ...prev, search: event.target.value }))}
-          />
-          <Input
-            label="Location"
-            value={filters.location}
-            onChange={(event) => setFilters((prev) => ({ ...prev, location: event.target.value }))}
-          />
-          <Input
-            label="Skills (comma or space)"
-            value={filters.skills}
-            onChange={(event) => setFilters((prev) => ({ ...prev, skills: event.target.value }))}
-          />
+      {/* Filters */}
+      <Card variant="surface" className="space-y-4">
+        <div className="text-sm font-semibold text-text mb-2">Search Filters</div>
+        <div className="grid gap-3 md:grid-cols-4">
+          <Input placeholder="Role or keyword" value={filters.search} onChange={(e) => setFilters(p => ({ ...p, search: e.target.value }))} />
+          <Input placeholder="Location" value={filters.location} onChange={(e) => setFilters(p => ({ ...p, location: e.target.value }))} />
+          <Input placeholder="Skills" value={filters.skills} onChange={(e) => setFilters(p => ({ ...p, skills: e.target.value }))} />
+          <Input placeholder="Min eligibility %" type="number" value={filters.minEligibility} onChange={(e) => setFilters(p => ({ ...p, minEligibility: e.target.value }))} />
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          <Input
-            label="Min experience (years)"
-            type="number"
-            min={0}
-            value={filters.minExperience}
-            onChange={(event) => setFilters((prev) => ({ ...prev, minExperience: event.target.value }))}
-          />
-          <Input
-            label="Min eligibility %"
-            type="number"
-            min={0}
-            max={100}
-            value={filters.minEligibility}
-            onChange={(event) => setFilters((prev) => ({ ...prev, minEligibility: event.target.value }))}
-          />
-          <Input
-            label="Employment type"
-            value={filters.employment}
-            onChange={(event) => setFilters((prev) => ({ ...prev, employment: event.target.value }))}
-          />
-        </div>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <label className="flex items-center gap-2 text-sm text-textMuted">
-            <input
-              type="checkbox"
-              checked={filters.remoteOnly}
-              onChange={(event) => setFilters((prev) => ({ ...prev, remoteOnly: event.target.checked }))}
-            />
+        <div className="flex flex-wrap items-center justify-between pt-2">
+          <label className="flex items-center gap-2 text-sm text-textMuted cursor-pointer hover:text-text transition-colors">
+            <input type="checkbox" className="accent-accent" checked={filters.remoteOnly} onChange={(e) => setFilters(p => ({ ...p, remoteOnly: e.target.checked }))} />
             Remote only
           </label>
-          <Button
-            variant="ghost"
-            onClick={() =>
-              setFilters({
-                search: "",
-                location: "",
-                employment: "",
-                skills: "",
-                minExperience: "",
-                minEligibility: "",
-                remoteOnly: false,
-              })
-            }
-          >
-            Reset Filters
+          <Button size="sm" variant="ghost" onClick={() => setFilters({ search: "", location: "", employment: "", skills: "", minExperience: "", minEligibility: "", remoteOnly: false })}>
+            Clear Filters
           </Button>
         </div>
       </Card>
 
       {error && <p className="text-sm text-danger">{error}</p>}
 
-      {filteredJobs.length === 0 && (
-        <EmptyState title="No jobs found" description="Try adjusting your filters or resume selection." />
+      {loading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map(i => <div key={i} className="h-40 rounded-xl shimmer" />)}
+        </div>
+      ) : filteredJobs.length === 0 ? (
+        <EmptyState title="No jobs found" description="Try adjusting your filters or selecting a different resume." />
+      ) : (
+        <div className="space-y-4">
+          {filteredJobs.map((job) => (
+            <JobCard key={job.id} job={job} resumeId={selectedResumeId} />
+          ))}
+        </div>
       )}
-      <div className="grid gap-4">
-        {filteredJobs.map((job) => (
-          <Card key={job.id} variant="muted" className="space-y-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="text-lg font-semibold text-white">{job.title}</div>
-                <div className="text-xs text-textMuted">
-                  {job.company ? `${job.company} - ` : ""}
-                  {job.location || "Remote"} - {job.employment_type || "Full-time"} - Min {job.minimum_experience_years} yrs
-                </div>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                {job.application && <Badge tone="success">Applied: {job.application.status}</Badge>}
-                {job.hr_name && <span className="text-xs text-textMuted">Posted by {job.hr_name}</span>}
-                <Link to={`/candidate/jobs/${job.id}?resume_id=${selectedResumeId ?? ""}`}>
-                  <Button variant="secondary">View Details</Button>
-                </Link>
-              </div>
-            </div>
-            <p className="text-sm text-textMuted">
-              {job.description.length > 180 ? `${job.description.slice(0, 180)}...` : job.description}
-            </p>
-            {job.required_skills.length > 0 && (
-              <div className="flex flex-wrap gap-2 text-xs text-textMuted">
-                {job.required_skills.map((skill) => (
-                  <span key={skill} className="rounded-full border border-border px-2 py-1">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            )}
-            {job.eligibility && (
-              <div className="flex flex-wrap items-center gap-4 text-sm text-textMuted">
-                <span>
-                  Eligibility: <span className="text-white">{job.eligibility.eligibility_percentage.toFixed(1)}%</span>
-                </span>
-                {job.eligibility.missing_skills.length > 0 && (
-                  <span className="text-xs text-danger">
-                    Missing: {job.eligibility.missing_skills.slice(0, 5).join(", ")}
-                  </span>
-                )}
-              </div>
-            )}
-          </Card>
-        ))}
-      </div>
+
       {meta && meta.total_pages > 1 && (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs text-textMuted">
-            Page {page} of {totalPages} · {meta.total} total jobs
+        <div className="flex items-center justify-between border-t border-border pt-4">
+          <div className="text-sm text-textMuted">
+            Page <span className="text-text font-medium">{page}</span> of {totalPages}
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-            >
-              Prev
-            </Button>
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-              <Button
-                key={pageNumber}
-                variant={pageNumber === page ? "primary" : "ghost"}
-                size="sm"
-                onClick={() => setPage(pageNumber)}
-              >
-                {pageNumber}
-              </Button>
-            ))}
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={page >= totalPages}
-              onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-            >
-              Next
-            </Button>
+          <div className="flex gap-2">
+            <Button variant="secondary" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Prev</Button>
+            <Button variant="secondary" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next</Button>
           </div>
         </div>
       )}

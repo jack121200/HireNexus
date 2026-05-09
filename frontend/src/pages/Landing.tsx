@@ -1,286 +1,239 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-
 import { Button } from "../components/Button";
-import { Card } from "../components/Card";
-import heroProduct from "../assets/landing/hero-product.svg";
-import featureAi from "../assets/landing/feature-ai-interviewer.svg";
-import featureResume from "../assets/landing/feature-resume-intel.svg";
-import featureMatch from "../assets/landing/feature-job-match.svg";
-import logoStrip from "../assets/landing/logo-strip.svg";
-import testimonialPortrait from "../assets/landing/testimonial-portrait.svg";
 
-const fadeUp = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.2 },
-};
+/* ════════════════════════════════════════════════════════════════════════════
+   LANDING PAGE — Midnight Prism Theme (Vercel + Linear inspired)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+const FEATURES = [
+  {
+    icon: "🤖",
+    title: "AI-Powered Interviews",
+    description: "Real-time voice interviews with natural AI that listens, responds, and scores your answers instantly.",
+  },
+  {
+    icon: "📊",
+    title: "Smart Scoring Engine",
+    description: "Multi-dimensional scoring using semantic similarity, technical depth, and rubric coverage.",
+  },
+  {
+    icon: "🧠",
+    title: "Career Intelligence",
+    description: "RAG-based career guidance chatbot that gives personalized roadmaps, skill gaps, and career advice.",
+  },
+  {
+    icon: "📝",
+    title: "Resume Analysis",
+    description: "AI-powered resume parsing and eligibility scoring against job descriptions.",
+  },
+  {
+    icon: "🎯",
+    title: "Job Matching",
+    description: "Intelligent matching between candidates and positions based on skills, experience, and preferences.",
+  },
+  {
+    icon: "⚡",
+    title: "Real-time Experience",
+    description: "Live transcription, instant feedback, and WebSocket-powered notifications throughout.",
+  },
+];
+
+const STATS = [
+  { value: "94%", label: "STT Accuracy", description: "AssemblyAI streaming" },
+  { value: "<1s", label: "AI Response", description: "Cached TTS + streaming" },
+  { value: "3x", label: "Faster Screening", description: "vs manual interviews" },
+  { value: "15+", label: "Career Paths", description: "RAG knowledge base" },
+];
+
+const WORKFLOW_STEPS = [
+  {
+    step: "01",
+    title: "Post a Job",
+    description: "HR posts job description with skills, experience requirements, and rubric criteria.",
+  },
+  {
+    step: "02",
+    title: "AI Matches Candidates",
+    description: "System scores resume eligibility and ranks candidates automatically.",
+  },
+  {
+    step: "03",
+    title: "Live AI Interview",
+    description: "Candidates take a real-time voice interview with the AI interviewer.",
+  },
+  {
+    step: "04",
+    title: "Instant Report",
+    description: "Detailed scoring report generated instantly with per-question breakdown.",
+  },
+];
 
 export const Landing = () => {
   return (
-    <div className="min-h-screen bg-ink text-text">
-      <div className="relative overflow-hidden">
-        <div className="absolute -top-32 left-10 h-72 w-72 rounded-full bg-accent/20 blur-[120px]" />
-        <div className="absolute right-0 top-10 h-80 w-80 rounded-full bg-accentCool/20 blur-[140px]" />
-        <div className="min-h-screen neo-aurora-bg">
-          <div className="mx-auto flex max-w-6xl flex-col gap-20 px-6 py-12">
-            <header className="flex flex-wrap items-center justify-between gap-4">
-              <div className="font-display text-2xl font-semibold text-white">
-                Hire<span className="text-gradient">Nexus</span>
-              </div>
-              <nav className="hidden items-center gap-6 text-sm text-textMuted md:flex">
-                <a className="hover:text-white" href="#features">
-                  Features
-                </a>
-                <a className="hover:text-white" href="#workflow">
-                  Workflow
-                </a>
-                <a className="hover:text-white" href="#stories">
-                  Stories
-                </a>
-              </nav>
-              <div className="flex items-center gap-2">
-                <Link to="/candidate/login">
-                  <Button variant="ghost" size="sm">
-                    Candidate Login
-                  </Button>
-                </Link>
-                <Link to="/hr/login">
-                  <Button variant="outline" size="sm">
-                    HR Login
-                  </Button>
-                </Link>
-              </div>
-            </header>
+    <div className="min-h-screen bg-ink text-text page-enter">
+      {/* ── Ambient glow ──────────────────────────────────────────────────── */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-accent/5 rounded-full blur-[120px]" />
+      </div>
 
-            <motion.section {...fadeUp} className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="space-y-6">
-                <div className="inline-flex w-fit items-center gap-2 rounded-full border border-accent/40 bg-panel/70 px-4 py-2 text-xs uppercase tracking-[0.35em] text-textMuted">
-                  AI Recruitment Suite
-                </div>
-                <h1 className="font-display text-4xl font-semibold text-white md:text-5xl">
-                  Build interview-ready candidates and high-signal hiring teams with{" "}
-                  <span className="text-gradient">Neo-Aurora</span> AI.
-                </h1>
-                <p className="max-w-2xl text-lg text-textMuted">
-                  HireNexus blends resume intelligence, adaptive AI interviews, and live eligibility scoring so every
-                  candidate knows exactly what to improve and every HR team hires faster.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Link to="/candidate/register">
-                    <Button size="lg" glow>
-                      Start as Candidate
-                    </Button>
-                  </Link>
-                  <Link to="/hr/register">
-                    <Button variant="secondary" size="lg">
-                      Launch HR Workspace
-                    </Button>
-                  </Link>
-                </div>
-                <div className="grid gap-3 md:grid-cols-3">
-                  {[
-                    { label: "Resume Score", value: "Skill gaps + eligibility" },
-                    { label: "AI Interviews", value: "Live scoring + feedback" },
-                    { label: "Job Matches", value: "Confidence % per role" },
-                  ].map((stat) => (
-                    <Card key={stat.label} variant="muted" padding="sm" className="space-y-2">
-                      <div className="text-xs uppercase tracking-[0.2em] text-textMuted">{stat.label}</div>
-                      <div className="text-lg font-semibold text-white">{stat.value}</div>
-                    </Card>
-                  ))}
-                </div>
-              </div>
+      <div className="relative">
+        <div className="mx-auto max-w-6xl px-6">
 
-              <Card variant="glass" glow className="space-y-4">
-                <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-textMuted">
-                  <span>Product Preview</span>
-                  <span className="text-gradient">Live</span>
-                </div>
-                <img
-                  src={heroProduct}
-                  alt="HireNexus product preview"
-                  className="w-full rounded-2xl border border-border/60 bg-panelMuted/60"
-                />
-                <div className="grid gap-3 md:grid-cols-3">
-                  {[
-                    "AI avatar interview room",
-                    "Scorecards with confidence",
-                    "Eligibility and gaps map",
-                  ].map((item) => (
-                    <div
-                      key={item}
-                      className="rounded-xl border border-border/60 bg-panelMuted/60 px-3 py-2 text-xs text-textMuted"
-                    >
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </motion.section>
+          {/* ════ HEADER ═══════════════════════════════════════════════════ */}
+          <header className="flex items-center justify-between py-6">
+            <Link to="/" className="font-display text-xl font-bold text-text tracking-tight">
+              Hire<span className="text-accent">Nexus</span>
+            </Link>
 
-            <motion.section {...fadeUp} className="space-y-6">
-              <div className="text-center text-xs uppercase tracking-[0.4em] text-textMuted">
-                Trusted by modern hiring teams
-              </div>
-              <img src={logoStrip} alt="Trusted teams" className="w-full opacity-80" />
-            </motion.section>
+            <nav className="hidden md:flex items-center gap-8 text-sm text-textMuted">
+              <a href="#features" className="hover:text-text transition-colors">Features</a>
+              <a href="#workflow" className="hover:text-text transition-colors">How it Works</a>
+              <a href="#stats" className="hover:text-text transition-colors">Stats</a>
+            </nav>
 
-            <motion.section id="features" {...fadeUp} className="space-y-8">
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <div>
-                  <div className="text-xs uppercase tracking-[0.4em] text-textMuted">Features</div>
-                  <h2 className="font-display text-3xl font-semibold text-white">
-                    A full-stack hiring advantage, from resume to offer.
-                  </h2>
-                </div>
-                <p className="max-w-xl text-sm text-textMuted">
-                  Candidates level up faster while recruiters get higher-quality pipelines with fewer interviews.
-                </p>
-              </div>
-              <div className="grid gap-6 md:grid-cols-3">
-                {[
-                  {
-                    title: "AI Interviewer",
-                    body: "Human-style questioning, follow-ups, and instant skill scoring.",
-                    image: featureAi,
-                  },
-                  {
-                    title: "Resume Intelligence",
-                    body: "Extract skills, compare to job descriptions, and prioritize the gaps.",
-                    image: featureResume,
-                  },
-                  {
-                    title: "Job Match Engine",
-                    body: "See live eligibility percentages before you apply.",
-                    image: featureMatch,
-                  },
-                ].map((feature) => (
-                  <Card key={feature.title} variant="glass" className="space-y-4">
-                    <img
-                      src={feature.image}
-                      alt={feature.title}
-                      className="h-40 w-full rounded-xl border border-border/60 bg-panelMuted/60 object-cover"
-                      loading="lazy"
-                    />
-                    <div className="text-lg font-semibold text-white">{feature.title}</div>
-                    <p className="text-sm text-textMuted">{feature.body}</p>
-                  </Card>
-                ))}
-              </div>
-            </motion.section>
+            <div className="flex items-center gap-3">
+              <Link to="/candidate/login">
+                <Button variant="ghost" size="sm">Sign In</Button>
+              </Link>
+              <Link to="/hr/login">
+                <Button variant="primary" size="sm">HR Portal →</Button>
+              </Link>
+            </div>
+          </header>
 
-            <motion.section id="workflow" {...fadeUp} className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-              <Card variant="glass" className="space-y-6">
-                <div>
-                  <div className="text-xs uppercase tracking-[0.4em] text-textMuted">Workflow</div>
-                  <h2 className="font-display text-2xl font-semibold text-white">
-                    From upload to offer in four clear steps.
-                  </h2>
-                </div>
-                <div className="grid gap-4">
-                  {[
-                    "Upload resume, extract strengths, highlight missing skills.",
-                    "Paste job description to get tailored improvement moves.",
-                    "Run adaptive mock interviews with instant scoring.",
-                    "Track eligibility gains and apply with confidence.",
-                  ].map((step, idx) => (
-                    <div key={step} className="flex items-start gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-white">
-                        {idx + 1}
-                      </div>
-                      <div className="text-sm text-textMuted">{step}</div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-              <Card variant="muted" className="space-y-5">
-                <div className="text-sm uppercase tracking-[0.3em] text-textMuted">Outcome</div>
-                <h3 className="text-2xl font-semibold text-white">
-                  Candidates feel ready. HR teams move faster.
-                </h3>
-                <p className="text-sm text-textMuted">
-                  Every report includes scores, confidence, strengths, missing skills, and tailored guidance. Use it
-                  to coach, shortlist, and close roles quickly.
-                </p>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-xl border border-border/60 bg-panelMuted/60 p-3 text-xs text-textMuted">
-                    Average eligibility lift: 22%
+          {/* ════ HERO ═════════════════════════════════════════════════════ */}
+          <section className="py-24 md:py-32 text-center max-w-3xl mx-auto">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-panelMuted px-4 py-1.5 text-xs text-textMuted mb-8 animate-fadeIn">
+              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+              AI-powered hiring platform
+            </div>
+
+            {/* Headline */}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-text tracking-tight leading-[1.1] animate-fadeInUp">
+              Hire smarter with{" "}
+              <span className="text-gradient">AI interviews</span>
+            </h1>
+
+            <p className="mt-6 text-lg md:text-xl text-textMuted max-w-xl mx-auto leading-relaxed animate-fadeInUp" style={{ animationDelay: "80ms" }}>
+              Real-time voice interviews, intelligent scoring, and career guidance — all in one platform.
+            </p>
+
+            {/* CTA */}
+            <div className="flex flex-wrap items-center justify-center gap-4 mt-10 animate-fadeInUp" style={{ animationDelay: "160ms" }}>
+              <Link to="/candidate/register">
+                <Button variant="primary" size="lg">Get Started — Free</Button>
+              </Link>
+              <Link to="/hr/register">
+                <Button variant="outline" size="lg">For Recruiters →</Button>
+              </Link>
+            </div>
+
+            {/* Trusted by label */}
+            <div className="mt-16 text-xs text-textDim animate-fadeIn" style={{ animationDelay: "300ms" }}>
+              Built with FastAPI · React · AWS Polly · Gemini AI · AssemblyAI
+            </div>
+          </section>
+
+          {/* ════ STATS BAR ══════════════════════════════════════════════════ */}
+          <section id="stats" className="py-16 border-t border-border">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {STATS.map((stat) => (
+                <div key={stat.label} className="text-center group">
+                  <div className="text-3xl md:text-4xl font-bold text-text group-hover:text-accent transition-colors">
+                    {stat.value}
                   </div>
-                  <div className="rounded-xl border border-border/60 bg-panelMuted/60 p-3 text-xs text-textMuted">
-                    Faster screening: 3x speed
-                  </div>
+                  <div className="mt-1 text-sm font-medium text-textMuted">{stat.label}</div>
+                  <div className="mt-0.5 text-xs text-textDim">{stat.description}</div>
                 </div>
-              </Card>
-            </motion.section>
+              ))}
+            </div>
+          </section>
 
-            <motion.section id="stories" {...fadeUp} className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-              <Card variant="glass" className="flex flex-col gap-6 md:flex-row md:items-center">
-                <img
-                  src={testimonialPortrait}
-                  alt="Candidate testimonial portrait"
-                  className="h-32 w-32 rounded-2xl border border-border/60 object-cover"
-                  loading="lazy"
-                />
-                <div className="space-y-3">
-                  <div className="text-xs uppercase tracking-[0.4em] text-textMuted">Candidate story</div>
-                  <p className="text-lg text-white">
-                    "The AI interviews felt real. I knew exactly how to improve before final round and landed the offer."
+          {/* ════ FEATURES ════════════════════════════════════════════════════ */}
+          <section id="features" className="py-20 border-t border-border">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
+                Everything you need
+              </h2>
+              <p className="mt-4 text-textMuted max-w-lg mx-auto">
+                A complete AI hiring platform, from job posting to interview scoring.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {FEATURES.map((feature) => (
+                <div
+                  key={feature.title}
+                  className="group rounded-xl border border-border bg-panel p-6 card-interactive"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-panelMuted border border-border text-xl mb-4 group-hover:border-accent/30 transition-colors">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-sm font-semibold text-text">{feature.title}</h3>
+                  <p className="mt-2 text-sm text-textMuted leading-relaxed">
+                    {feature.description}
                   </p>
-                  <div className="text-xs text-textMuted">Candidate, Full-Stack Engineer</div>
                 </div>
-              </Card>
-              <Card variant="muted" className="space-y-4">
-                <div className="text-xs uppercase tracking-[0.4em] text-textMuted">For HR teams</div>
-                <h3 className="text-2xl font-semibold text-white">Signals you can trust.</h3>
-                <p className="text-sm text-textMuted">
-                  Replace guesswork with AI-generated scorecards and structured feedback. HireNexus helps you align
-                  recruiters, hiring managers, and candidates on what matters.
-                </p>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <div className="rounded-xl border border-border/60 bg-panelMuted/60 p-3 text-xs text-textMuted">
-                    Structured interview data
-                  </div>
-                  <div className="rounded-xl border border-border/60 bg-panelMuted/60 p-3 text-xs text-textMuted">
-                    Confidence scoring
-                  </div>
-                  <div className="rounded-xl border border-border/60 bg-panelMuted/60 p-3 text-xs text-textMuted">
-                    Missing skills map
-                  </div>
-                  <div className="rounded-xl border border-border/60 bg-panelMuted/60 p-3 text-xs text-textMuted">
-                    Actionable next steps
-                  </div>
-                </div>
-              </Card>
-            </motion.section>
+              ))}
+            </div>
+          </section>
 
-            <motion.section
-              {...fadeUp}
-              className="rounded-[32px] border border-accent/40 bg-panel/80 p-10 text-center shadow-glow"
-            >
-              <div className="mx-auto max-w-2xl space-y-4">
-                <div className="text-xs uppercase tracking-[0.4em] text-textMuted">Ready to begin</div>
-                <h2 className="font-display text-3xl font-semibold text-white">
-                  Make every interview feel like a win.
-                </h2>
-                <p className="text-sm text-textMuted">
-                  Start with a resume upload or launch your HR workspace in minutes.
-                </p>
-                <div className="flex flex-wrap justify-center gap-3">
-                  <Link to="/candidate/register">
-                    <Button size="lg" glow>
-                      Join as Candidate
-                    </Button>
-                  </Link>
-                  <Link to="/hr/register">
-                    <Button size="lg" variant="secondary">
-                      Create HR Workspace
-                    </Button>
-                  </Link>
+          {/* ════ HOW IT WORKS ════════════════════════════════════════════════ */}
+          <section id="workflow" className="py-20 border-t border-border">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
+                How it works
+              </h2>
+              <p className="mt-4 text-textMuted max-w-lg mx-auto">
+                From job posting to hiring decision — 4 simple steps.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {WORKFLOW_STEPS.map((item) => (
+                <div key={item.step} className="relative">
+                  {/* Step number */}
+                  <div className="text-6xl font-bold text-border/40 font-display">{item.step}</div>
+                  <h3 className="mt-2 text-sm font-semibold text-text">{item.title}</h3>
+                  <p className="mt-2 text-sm text-textMuted leading-relaxed">{item.description}</p>
                 </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ════ CTA SECTION ═════════════════════════════════════════════════ */}
+          <section className="py-20 border-t border-border">
+            <div className="rounded-2xl border border-border bg-panel p-12 md:p-16 text-center gradient-border">
+              <h2 className="text-3xl md:text-4xl font-bold text-text tracking-tight">
+                Ready to transform hiring?
+              </h2>
+              <p className="mt-4 text-textMuted max-w-md mx-auto">
+                Start conducting AI-powered interviews today. No credit card required.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
+                <Link to="/candidate/register">
+                  <Button variant="primary" size="lg">Start Free Trial</Button>
+                </Link>
+                <Link to="/hr/register">
+                  <Button variant="secondary" size="lg">Contact Sales</Button>
+                </Link>
               </div>
-            </motion.section>
-          </div>
+            </div>
+          </section>
+
+          {/* ════ FOOTER ══════════════════════════════════════════════════════ */}
+          <footer className="py-10 border-t border-border flex flex-wrap items-center justify-between gap-4">
+            <div className="font-display text-sm font-bold text-textMuted">
+              Hire<span className="text-accent">Nexus</span>
+            </div>
+            <div className="flex items-center gap-6 text-xs text-textDim">
+              <span>© {new Date().getFullYear()} HireNexus</span>
+              <a href="#" className="hover:text-textMuted transition-colors">Privacy</a>
+              <a href="#" className="hover:text-textMuted transition-colors">Terms</a>
+            </div>
+          </footer>
+
         </div>
       </div>
     </div>

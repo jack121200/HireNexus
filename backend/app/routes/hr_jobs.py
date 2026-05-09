@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -11,6 +9,8 @@ from app.models.user import User
 from app.schemas.common import meta_from_page
 from app.schemas.job import JobBrowseResponse, JobCreateRequest, JobCreateResponse, JobResponse
 from app.services.job_service import create_job, hr_jobs_summary
+from app.services.ml.jd_parser import parse_jd_with_groq
+from app.services.ml.score_cache import rescore_job_vs_all_candidates
 from app.services.pagination import paginate
 
 
@@ -36,9 +36,27 @@ def _job_response(job: Job) -> JobResponse:
     )
 
 
+
+def _trigger_jd_enrichment(job_id: int, description: str, db_session_factory) -> None:
+    """Background task: parse JD with Groq and store parsed_jd on job."""
+    try:
+        db = next(db_session_factory())
+        job: Job | None = db.get(Job, job_id)
+        if job:
+            parsed = parse_jd_with_groq(description)
+            job.parsed_jd = parsed
+            job.preferred_skills = parsed.get("preferred_skills", [])
+            db.add(job)
+            db.commit()
+        db.close()
+    except Exception:
+        pass  # Non-fatal
+
+
 @router.post("", response_model=JobCreateResponse)
 def post_job(
     payload: JobCreateRequest,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_hr),
     db: Session = Depends(get_db),
 ) -> JobCreateResponse:
@@ -56,6 +74,10 @@ def post_job(
     )
     db.commit()
     db.refresh(job)
+    # Background 1: parse JD with Groq to populate parsed_jd + preferred_skills
+    background_tasks.add_task(_trigger_jd_enrichment, job.id, payload.description, get_db)
+    # Background 2: compute match scores for all candidates against this new job
+    background_tasks.add_task(rescore_job_vs_all_candidates, job_id=job.id, db_session_factory=get_db)
     return JobCreateResponse(job=_job_response(job))
 
 

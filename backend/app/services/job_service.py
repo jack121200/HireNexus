@@ -12,6 +12,8 @@ from app.models.job import Job
 from app.models.resume import Resume
 from app.models.user import User, UserRole
 from app.services.ml import EligibilityResult, compute_eligibility, extract_required_skills
+from app.services.ml.gap_analyzer import enrich_gaps_with_suggestions, gaps_to_dict
+from app.services.ml.score_cache import get_cached_score, set_cached_score
 from app.services.pagination import paginate
 from app.services.resume_service import get_primary_resume, get_resume
 
@@ -78,24 +80,71 @@ def _application_map(db: Session, *, candidate_user_id: int, job_ids: list[int])
     return {app.job_id: app for app in applications}
 
 
-def _eligibility_for_job(*, resume: Resume | None, job: Job) -> EligibilityResult | None:
+def _eligibility_for_job(
+    *,
+    resume: Resume | None,
+    job: Job,
+    candidate_id: int | None = None,
+) -> dict | None:
+    """Returns eligibility dict — checks Redis cache first, falls back to live compute."""
     if not resume:
         return None
 
+    # Try Redis cache first
+    if candidate_id:
+        cached = get_cached_score(candidate_id, job.id)
+        if cached:
+            return cached
+
+    job_req_skills = list(job.required_skills) if job.required_skills is not None else []
+    if job.parsed_jd and isinstance(job.parsed_jd, dict):
+        parsed_req_skills = job.parsed_jd.get("required_skills")
+        if parsed_req_skills:
+            if isinstance(parsed_req_skills, list):
+                job_req_skills.extend(parsed_req_skills)
+            elif isinstance(parsed_req_skills, str):
+                job_req_skills.append(parsed_req_skills)
+            job_req_skills = list(set(job_req_skills))
+
     job_like = {
         "description": job.description,
-        "required_skills": job.required_skills,
+        "required_skills": job_req_skills,
         "minimum_experience_years": job.minimum_experience_years,
         "education_requirement": job.education_requirement,
     }
+
+    # Merge Groq-parsed Resume skills if available
+    res_skills = list(resume.extracted_skills) if resume.extracted_skills is not None else []
+    if isinstance(resume.parsed_json, dict) and "groq_structured" in resume.parsed_json:
+        parsed_res_skills = resume.parsed_json["groq_structured"].get("skills")
+        if parsed_res_skills:
+            if isinstance(parsed_res_skills, list):
+                res_skills.extend(parsed_res_skills)
+            elif isinstance(parsed_res_skills, str):
+                res_skills.append(parsed_res_skills)
+            res_skills = list(set(res_skills))
+
     resume_like = {
         "raw_text": resume.raw_text,
-        "skills": resume.extracted_skills,
+        "skills": res_skills,
         "estimated_experience_years": resume.estimated_experience_years,
         "education_level": resume.education_level,
         "parsed_json": resume.parsed_json,
     }
-    return compute_eligibility(resume_like=resume_like, job_like=job_like)
+    result = compute_eligibility(resume_like=resume_like, job_like=job_like)
+    result_dict = result.to_dict()
+
+    # Enrich with gap suggestions
+    missing = list(result.missing_skills)
+    candidate_skills = list(resume.extracted_skills or [])
+    enriched_gaps = enrich_gaps_with_suggestions(missing, candidate_skills)
+    result_dict["skill_gaps"] = gaps_to_dict(enriched_gaps)
+
+    # Cache result
+    if candidate_id:
+        set_cached_score(candidate_id, job.id, result_dict)
+
+    return result_dict
 
 
 def list_jobs_for_candidate(
@@ -124,7 +173,7 @@ def list_jobs_for_candidate(
 
     payload: list[dict[str, Any]] = []
     for job in jobs:
-        eligibility = _eligibility_for_job(resume=resume, job=job)
+        eligibility = _eligibility_for_job(resume=resume, job=job, candidate_id=candidate.id)
         application = application_map.get(job.id)
         payload.append(
             {
@@ -137,10 +186,11 @@ def list_jobs_for_candidate(
                 "description": job.description,
                 "responsibilities": job.responsibilities,
                 "required_skills": job.required_skills,
+                "preferred_skills": job.preferred_skills if job.preferred_skills else [],
                 "minimum_experience_years": job.minimum_experience_years,
                 "education_requirement": job.education_requirement,
                 "company_id": job.company_id,
-                "eligibility": eligibility.to_dict() if eligibility else None,
+                "eligibility": eligibility,
                 "application": {
                     "id": application.id,
                     "status": application.status.value,
@@ -188,6 +238,7 @@ def get_job_detail_for_candidate(
         "description": job.description,
         "responsibilities": job.responsibilities,
         "required_skills": job.required_skills,
+        "preferred_skills": job.preferred_skills if job.preferred_skills else [],
         "extracted_required_skills": job.extracted_required_skills,
         "minimum_experience_years": job.minimum_experience_years,
         "education_requirement": job.education_requirement,
@@ -204,7 +255,7 @@ def get_job_detail_for_candidate(
         if job.company
         else None,
         "hr_name": job.hr_user.full_name if job.hr_user else None,
-        "eligibility": eligibility.to_dict() if eligibility else None,
+        "eligibility": _eligibility_for_job(resume=resume, job=job, candidate_id=candidate.id),
         "application": {
             "id": application.id,
             "status": application.status.value,

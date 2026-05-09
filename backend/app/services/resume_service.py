@@ -78,6 +78,8 @@ def create_resume(db: Session, *, user: User, file: UploadFile) -> Resume:
         ) from exc
     parsed_payload = parsed.to_dict()
 
+    # groq_structured is now natively handled within parsed.to_dict()
+
     _unset_primary(db, user_id=user.id)
 
     resume = Resume(
@@ -96,6 +98,7 @@ def create_resume(db: Session, *, user: User, file: UploadFile) -> Resume:
     db.add(resume)
     db.flush()
     return resume
+
 
 
 def list_resumes(db: Session, *, user_id: int) -> list[Resume]:

@@ -7,8 +7,10 @@ import { CandidateRegister } from "./pages/auth/CandidateRegister";
 import { HrLogin } from "./pages/auth/HrLogin";
 import { HrRegister } from "./pages/auth/HrRegister";
 import { CandidateChat } from "./pages/candidate/Chat";
+import { CareerGuide } from "./pages/candidate/CareerGuide";
 import { CandidateDashboard } from "./pages/candidate/Dashboard";
 import { CandidateInterview } from "./pages/candidate/Interview";
+import { CandidateInterviews } from "./pages/candidate/Interviews";
 import { InterviewReport } from "./pages/candidate/InterviewReport";
 import { CandidateJobs } from "./pages/candidate/Jobs";
 import { CandidateJobDetail } from "./pages/candidate/JobDetail";
@@ -46,11 +48,13 @@ function App() {
           <Route path="resume" element={<CandidateResumes />} />
           <Route path="jobs" element={<CandidateJobs />} />
           <Route path="jobs/:jobId" element={<CandidateJobDetail />} />
+          <Route path="interviews" element={<CandidateInterviews />} />
           <Route path="interview/:applicationId" element={<CandidateInterview />} />
           <Route path="interview/:interviewId/report" element={<InterviewReport />} />
           <Route path="mock-interview" element={<MockInterview />} />
           <Route path="notifications" element={<CandidateNotifications />} />
           <Route path="chat" element={<CandidateChat />} />
+          <Route path="career-guide" element={<CareerGuide />} />
         </Route>
 
         <Route path="/hr/login" element={<HrLogin />} />

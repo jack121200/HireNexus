@@ -1,0 +1,31 @@
+Total blocks: 18
+
+--- Block 0 (len=416) ---
+'================================================================\nHIRENEXUS CAREER GUIDANCE KNOWLEDGE BASE\nROLE: SDE (General)\nTOPICS: T1 through T8\nAUDIENCE: All Levels (Fresher to Senior)\nMARKET: India + Global\nCHUNKING NOTE: Split on === boundaries first, then on H2 (##) boundaries.\nEach H2 sectio'
+  is_header=False, has_TOPIC=False, has_ROLE=True
+  non-empty lines: ['================================================================', 'HIRENEXUS CAREER GUIDANCE KNOWLEDGE BASE', 'ROLE: SDE (General)', 'TOPICS: T1 through T8', 'AUDIENCE: All Levels (Fresher to Senior)']
+
+--- Block 1 (len=0) ---
+''
+  is_header=True, has_TOPIC=False, has_ROLE=False
+  non-empty lines: []
+
+--- Block 2 (len=129) ---
+'TOPIC: T1 — Role Overview\nROLE: SDE (General)\nAUDIENCE: All Levels\nTAGS: role-overview, sde, day-to-day, work-culture, india-tech'
+  is_header=True, has_TOPIC=True, has_ROLE=True
+  non-empty lines: ['TOPIC: T1 — Role Overview', 'ROLE: SDE (General)', 'AUDIENCE: All Levels', 'TAGS: role-overview, sde, day-to-day, work-culture, india-tech']
+
+--- Block 3 (len=7218) ---
+'# SDE (General) — Role Overview: What This Job Actually Looks Like\n\n## The Real Definition of an SDE\n\nA Software Development Engineer — called SDE in India and most of the world — is someone whose job is to convert ambiguous problems into reliable, working software. That sounds simple. It is not. Th'
+  is_header=False, has_TOPIC=False, has_ROLE=False
+  non-empty lines: ['# SDE (General) — Role Overview: What This Job Actually Looks Like', '## The Real Definition of an SDE', 'A Software Development Engineer — called SDE in India and most of the world — is someone whose job is to convert ambiguous problems into reliable, working software. That sounds simple. It is not. The ambiguity is the hard part. No one hands you a fully defined problem with a clean solution already designed. You get a user complaint, a business requirement, a performance alert, or a half-formed product idea — and your job is to think it through, design a solution, build it, test it, and ship it without breaking what already works.', "In India's tech landscape, SDE is the most common and most sought-after role in the entire industry. It spans every company type — from TCS handling government projects to Zepto running 10-minute grocery delivery to Google building search for a billion users. The common thread across all these companies is the same core job: take a problem, solve it in code, ship it.", 'What separates great SDEs from average ones is not how fast they type or how many LeetCode problems they\'ve solved. It is the ability to ask the right questions before writing a single line of code. "Why does this feature need to exist?" "What happens if this API goes down?" "How many users will hit this endpoint simultaneously?" Engineers who ask these questions early write software that survives contact with reality. Engineers who skip these questions often write beautiful code that breaks at the worst possible time.']
+
+--- Block 4 (len=144) ---
+'TOPIC: T2 — Skill Roadmap\nROLE: SDE (General)\nAUDIENCE: Fresher to Senior\nTAGS: skill-roadmap, learning-path, fresher, career-growth, india-tech'
+  is_header=True, has_TOPIC=True, has_ROLE=True
+  non-empty lines: ['TOPIC: T2 — Skill Roadmap', 'ROLE: SDE (General)', 'AUDIENCE: Fresher to Senior', 'TAGS: skill-roadmap, learning-path, fresher, career-growth, india-tech']
+
+--- Block 5 (len=10435) ---
+'# SDE Skill Roadmap: From Fresher to Senior Engineer\n\n## Phase 1 — Foundations (Month 1–3): Get the Core Right Before Anything Else\n\nThe most common mistake Indian engineering graduates make is jumping to frameworks, certifications, and cloud tools before their foundations are solid. This creates en'
+  is_header=False, has_TOPIC=False, has_ROLE=False
+  non-empty lines: ['# SDE Skill Roadmap: From Fresher to Senior Engineer', '## Phase 1 — Foundations (Month 1–3): Get the Core Right Before Anything Else', 'The most common mistake Indian engineering graduates make is jumping to frameworks, certifications, and cloud tools before their foundations are solid. This creates engineers who can run a Spring Boot project but cannot explain why a HashMap has O(1) average lookup, or who can write SQL queries but do not understand what a database index actually does. Foundation gaps do not disappear with time — they compound into larger problems.', "**Language mastery is the first priority.** Pick one language and go genuinely deep into it before touching a second. In India's job market, Java is the safest choice — it is used at Amazon, Flipkart, PhonePe, and most service companies, and the sheer volume of Java roles means you will always have options. Python is the right choice if you are targeting ML-adjacent roles or data-heavy startups. Node.js is a good option if you want to build full-stack quickly at a startup. Pick one. Depth beats breadth at this stage.", 'Going deep means understanding how your language handles memory (stack vs heap allocation), how it manages concurrency (threads, async, coroutines depending on the language), how exceptions propagate and how the runtime handles them, and what happens at compile or interpretation time. These are not academic questions — they become directly relevant when you are debugging a memory leak in production or trying to understand why a concurrent API is returning inconsistent results.']

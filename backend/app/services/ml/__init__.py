@@ -30,12 +30,25 @@ def parse_resume(*, file_path: Path, file_type: str) -> ParsedResume:
 def compute_eligibility(*, resume_like: dict[str, Any], job_like: dict[str, Any]) -> EligibilityResult:
     settings = get_settings()
     embedding_model_name = settings.embedding_model_name if settings.use_sentence_transformers else ""
-    return _compute_eligibility(
-        resume_data=resume_like,
-        job_data=job_like,
-        embedding_model_name=embedding_model_name,
-        logger=logger,
-    )
+    # Compatibility shim: newer eligibility module expects resume_like/job_like
+    # while older versions used resume_data/job_data.
+    try:
+        return _compute_eligibility(
+            resume_like=resume_like,
+            job_like=job_like,
+            embedding_model_name=embedding_model_name,
+            logger=logger,
+        )
+    except TypeError as exc:
+        message = str(exc)
+        if "unexpected keyword argument" not in message:
+            raise
+        return _compute_eligibility(
+            resume_data=resume_like,
+            job_data=job_like,
+            embedding_model_name=embedding_model_name,
+            logger=logger,
+        )
 
 
 def extract_required_skills(*, description: str, explicit_required_skills: list[str]) -> list[str]:

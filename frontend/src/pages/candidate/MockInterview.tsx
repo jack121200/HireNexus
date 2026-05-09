@@ -18,6 +18,29 @@ type InterviewResponse = {
   interview: { id: number };
 };
 
+const ROLE_PRESETS: { label: string; role: string; jd: string }[] = [
+  {
+    label: "🖥️ Backend Eng",
+    role: "Backend Engineer",
+    jd: "We are looking for a Backend Engineer with 3+ years building scalable REST APIs using Python/FastAPI or Node.js. Must have strong SQL (PostgreSQL/MySQL), Redis, Docker. Bonus: Kubernetes, AWS, GraphQL.",
+  },
+  {
+    label: "⚛️ Frontend Eng",
+    role: "Frontend Engineer",
+    jd: "We need a Frontend Engineer proficient in React, TypeScript, and Tailwind CSS. Should understand state management (Zustand/Redux), performance optimization, and have experience with Vite or Next.js.",
+  },
+  {
+    label: "🤖 ML Engineer",
+    role: "Machine Learning Engineer",
+    jd: "ML Engineer role — Python, PyTorch/TensorFlow, model training and fine-tuning, MLOps (experiment tracking, deployment), REST APIs for serving models. RAG/LLM experience is a strong plus.",
+  },
+  {
+    label: "☁️ DevOps",
+    role: "DevOps Engineer",
+    jd: "DevOps Engineer with 2+ years experience in CI/CD pipelines (GitHub Actions, Jenkins), Docker, Kubernetes, AWS/GCP, Terraform, monitoring (Prometheus, Grafana).",
+  },
+];
+
 export const MockInterview = () => {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [resumeId, setResumeId] = useState<number | null>(null);
@@ -35,6 +58,11 @@ export const MockInterview = () => {
       })
       .catch((err) => setError((err as Error).message));
   }, []);
+
+  const applyPreset = (preset: (typeof ROLE_PRESETS)[number]) => {
+    setRole(preset.role);
+    setJdText(preset.jd);
+  };
 
   const startMockInterview = async () => {
     setError(null);
@@ -65,8 +93,31 @@ export const MockInterview = () => {
 
       {!interviewId && (
         <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
-          <Card variant="glass" className="space-y-4">
-            <div className="text-lg font-semibold text-white">Interview Setup</div>
+          <Card variant="glass" className="space-y-5">
+            <div>
+              <div className="text-lg font-bold text-white">Interview Setup</div>
+              <div className="text-xs text-textMuted mt-0.5">Fill manually or pick a quick preset below</div>
+            </div>
+
+            {/* Role presets */}
+            <div className="space-y-2">
+              <div className="text-[11px] uppercase tracking-wider text-textMuted">Quick Presets</div>
+              <div className="flex flex-wrap gap-2">
+                {ROLE_PRESETS.map((preset) => (
+                  <button
+                    key={preset.role}
+                    onClick={() => applyPreset(preset)}
+                    className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${role === preset.role
+                        ? "border-accent/60 bg-accent/15 text-accent"
+                        : "border-border bg-panelMuted text-textMuted hover:border-accent/40 hover:text-white"
+                      }`}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <Input label="Target Role" value={role} onChange={(e) => setRole(e.target.value)} />
             <Input
               label="Years of Experience"
@@ -88,9 +139,10 @@ export const MockInterview = () => {
             </Select>
             <Textarea label="Paste Job Description" value={jdText} onChange={(e) => setJdText(e.target.value)} />
             <Button onClick={startMockInterview} disabled={!role || !jdText}>
-              Start Mock Interview
+              🎙️ Start Mock Interview
             </Button>
           </Card>
+
 
           <Card variant="muted" className="space-y-4">
             <div className="text-lg font-semibold text-white">What to Expect</div>

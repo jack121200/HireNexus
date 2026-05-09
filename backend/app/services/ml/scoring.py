@@ -78,37 +78,40 @@ def _keyword_coverage(answer: str, rubric_points: Sequence[str]) -> float:
 
 
 def _coherence(answer: str) -> float:
-    """Improved coherence scoring with better heuristics."""
+    """Coherence scoring using lexical diversity + structure — not just word count."""
     words = answer.split()
     if not words:
         return 0.0
-    
+
     word_count = len(words)
-    
-    # Length score - more forgiving curve
-    if word_count < 10:
-        length_score = (word_count / 10) * 30
-    elif word_count < 50:
-        length_score = 30 + ((word_count - 10) / 40) * 40
-    elif word_count < 150:
-        length_score = 70 + ((word_count - 50) / 100) * 30
+
+    # Lexical diversity: unique meaningful words / total words
+    # High diversity = varied vocabulary = better answer quality
+    lower_words = [w.lower().strip(".,!?") for w in words if len(w) > 2]
+    unique_ratio = len(set(lower_words)) / max(len(lower_words), 1)
+    diversity_score = min(unique_ratio * 130, 100.0)  # scale: 0.77 ratio → 100
+
+    # Minimal length threshold — just needs to be substantial enough
+    if word_count < 8:
+        length_score = (word_count / 8) * 40
+    elif word_count < 20:
+        length_score = 40 + ((word_count - 8) / 12) * 35
     else:
-        length_score = 100
-    
-    # Sentence structure score
-    sentence_count = max(len([ch for ch in answer if ch in ".!?"]), 1)
+        length_score = 75 + min((word_count - 20) / 80, 1.0) * 25
+    length_score = min(length_score, 100.0)
+
+    # Sentence structure score (penalize endless run-ons)
+    sentence_count = max(sum(1 for ch in answer if ch in ".!?"), 1)
     avg_words_per_sentence = word_count / sentence_count
-    
-    # Optimal range: 10-25 words per sentence
-    if 10 <= avg_words_per_sentence <= 25:
+    if 8 <= avg_words_per_sentence <= 30:
         structure_score = 100
-    elif avg_words_per_sentence < 10:
-        structure_score = (avg_words_per_sentence / 10) * 100
+    elif avg_words_per_sentence < 8:
+        structure_score = (avg_words_per_sentence / 8) * 100
     else:
-        structure_score = max(0, 100 - ((avg_words_per_sentence - 25) * 2))
-    
-    # Combine scores
-    coherence = (length_score * 0.7) + (structure_score * 0.3)
+        structure_score = max(0, 100 - ((avg_words_per_sentence - 30) * 1.5))
+
+    # Weight: diversity matters more than raw length in 2024
+    coherence = (diversity_score * 0.45) + (length_score * 0.30) + (structure_score * 0.25)
     return round(min(coherence, 100.0), 2)
 
 
@@ -172,32 +175,45 @@ def _answer_completeness(answer: str, rubric_points: Sequence[str]) -> float:
 
 
 def _technical_depth(answer: str, question: QuestionItem) -> float:
-    """Assess technical depth based on question difficulty."""
+    """Technical depth: combines length, keyword density, and specificity markers."""
     words = answer.split()
     word_count = len(words)
-    
-    # Expected word count based on difficulty
+
+    # Specificity markers — signals that indicate real technical knowledge
+    specificity_markers = (
+        "because", "therefore", "specifically", "for example", "for instance",
+        "trade-off", "tradeoff", "instead of", "compared to", "rather than",
+        "implemented", "designed", "built", "deployed", "optimized", "reduced",
+        "increased", "improved", "achieved", "measured", "tested", "debugged",
+        "percentage", "latency", "throughput", "scalab", "async", "concurrent",
+        "memory", "cache", "database", "endpoint", "api", "service", "module",
+        "pattern", "architecture", "algorithm", "complexity",
+    )
+    answer_lower = answer.lower()
+    marker_hits = sum(1 for m in specificity_markers if m in answer_lower)
+    # Marker score: 0 markers→0, 3 markers→60, 6+ markers→100
+    marker_score = min((marker_hits / 6) * 100, 100.0)
+
+    # Minimal length baseline — enough to say something meaningful
     if question.difficulty == "easy":
-        expected_min = 20
-        expected_optimal = 60
+        expected_min, expected_optimal = 15, 50
     elif question.difficulty == "medium":
-        expected_min = 40
-        expected_optimal = 100
+        expected_min, expected_optimal = 25, 80
     elif question.difficulty == "hard":
-        expected_min = 60
-        expected_optimal = 150
+        expected_min, expected_optimal = 40, 120
     else:  # expert
-        expected_min = 80
-        expected_optimal = 200
-    
-    # Score based on word count relative to expected
+        expected_min, expected_optimal = 60, 160
+
     if word_count < expected_min:
-        depth_score = (word_count / expected_min) * 50
+        length_score = (word_count / expected_min) * 40
     elif word_count < expected_optimal:
-        depth_score = 50 + ((word_count - expected_min) / (expected_optimal - expected_min)) * 50
+        length_score = 40 + ((word_count - expected_min) / (expected_optimal - expected_min)) * 60
     else:
-        depth_score = 100
-    
+        length_score = 100
+    length_score = min(length_score, 100.0)
+
+    # Combined: specificity markers are the real signal, length is supporting
+    depth_score = (marker_score * 0.60) + (length_score * 0.40)
     return round(min(depth_score, 100.0), 2)
 
 
@@ -221,34 +237,38 @@ def _score_answer(
     completeness = _answer_completeness(answer, rubric_points)
     depth = _technical_depth(answer, question)
 
-    # Weighted combination with improved weights
+    # === Reweighted scoring: semantic + completeness are primary signals ===
+    # Old weights were biased toward word-count (depth+coherence = 30% but both length-based)
+    # New weights: semantic understanding + rubric coverage are what matters most
     score = (
-        (semantic * 0.25) +      # Semantic understanding
-        (coverage * 0.20) +      # Keyword coverage
-        (coherence * 0.15) +     # Answer structure
-        (completeness * 0.25) +  # Addresses rubric points
-        (depth * 0.15)           # Technical depth
+        (semantic * 0.35) +       # Semantic similarity to rubric (primary)
+        (coverage * 0.25) +       # Keyword coverage (primary)
+        (completeness * 0.22) +   # Addresses rubric points (important)
+        (coherence * 0.10) +      # Lexical diversity + structure (secondary)
+        (depth * 0.08)            # Technical specificity markers (supporting)
     )
-    
+
     score = round(max(0.0, min(score, 100.0)), 2)
 
-    # Apply bonuses and penalties
     word_count = len(answer.split())
-    
-    # Bonus for good answers
-    if word_count >= 50 and completeness >= 60 and coherence >= 70:
-        score = min(score * 1.1, 100.0)
-    
-    # Gentle penalty for very short answers (not as harsh)
-    if word_count < Thresholds.MIN_ANSWER_WORDS:
-        penalty_factor = word_count / Thresholds.MIN_ANSWER_WORDS
-        score = score * (0.5 + (penalty_factor * 0.5))  # 50-100% of score
-    
-    # Only cap score if both semantic and coverage are very low
-    if coverage < 10 and semantic < 15:
-        score = min(score, 25.0)
-    elif coverage < 20 and semantic < 25:
-        score = min(score, 50.0)
+
+    # Bonus: content-rich medium-length answers (content over volume)
+    if completeness >= 60 and semantic >= 50 and word_count >= 30:
+        score = min(score * 1.08, 100.0)
+
+    # Penalty only for extremely short answers (<8 words) — not for answers <MIN_ANSWER_WORDS
+    # This allows concise-but-correct answers to score well
+    if word_count < 8:
+        score = score * 0.4
+    elif word_count < Thresholds.MIN_ANSWER_WORDS:  # 8..MIN_ANSWER_WORDS
+        penalty_factor = (word_count - 8) / max(Thresholds.MIN_ANSWER_WORDS - 8, 1)
+        score = score * (0.70 + penalty_factor * 0.30)  # 70-100% of score
+
+    # Cap only when BOTH content signals are truly absent
+    if coverage < 8 and semantic < 12:
+        score = min(score, 22.0)
+    elif coverage < 15 and semantic < 20:
+        score = min(score, 45.0)
 
     score = round(score, 2)
 
@@ -321,11 +341,17 @@ def _gemini_score_interview(
         logger.warning("llm_client_init_failed", provider=LLMProvider.GEMINI.value, error=str(exc))
         return None
 
+    role_hint = " The candidate is being evaluated for a technical role."
+
     system_prompt = (
-        "You are a fair and experienced technical interviewer evaluating a candidate. "
-        "Score each answer on a 0-100 scale based on: technical accuracy, completeness, "
-        "clarity, and relevance to the question. Be realistic - good answers should get 60-85, "
-        "excellent answers 85-100, weak answers 20-50, and very poor answers below 20. "
+        "You are a fair and experienced technical interviewer evaluating a candidate's interview answers." +
+        role_hint +
+        " Score each answer on a 0-100 scale based on: technical accuracy, depth of explanation, "
+        "relevance to the question, and use of specific examples. "
+        "IMPORTANT: Do NOT penalize short answers if the content is technically correct — "
+        "a concise accurate answer should score higher than a verbose vague one. "
+        "Score guidance: excellent technical depth = 85-100, good coverage = 65-84, "
+        "partial/surface-level = 40-64, vague or incorrect = 15-39, no answer = 0-14. "
         "Return ONLY valid JSON with this exact structure: "
         "{"
         "\"overall_score\": number (0-100),"

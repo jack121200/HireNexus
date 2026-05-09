@@ -16,6 +16,8 @@ from app.routes import (
     hr_notifications,
     ws,
     voice,
+    career_guide,
+    vapi_webhook,
 )
 
 __all__ = [
@@ -36,4 +38,6 @@ __all__ = [
     "hr_notifications",
     "ws",
     "voice",
+    "career_guide",
+    "vapi_webhook",
 ]

@@ -521,14 +521,19 @@ def generate_questions(*, context: QuestionContext, count: int, seed: int) -> li
         if gemini_questions:
             logger.info("generate_questions_gemini_success", count=len(gemini_questions))
             return gemini_questions
-        logger.info("generate_questions_gemini_failed_trying_local")
-        
-        # Try local as fallback
+        logger.info("generate_questions_gemini_failed_trying_groq")
+        groq_after_gemini = _llm_generate_questions(
+            context=context, count=count, seed=seed, provider=LLMProvider.GROQ.value
+        )
+        if groq_after_gemini:
+            logger.info("generate_questions_groq_fallback_success", count=len(groq_after_gemini))
+            return groq_after_gemini
+        logger.info("generate_questions_groq_failed_trying_local")
         local_questions = _llm_generate_questions(context=context, count=count, seed=seed, provider=LLMProvider.LOCAL.value)
         if local_questions:
             logger.info("generate_questions_local_success", count=len(local_questions))
             return local_questions
-        
+
         logger.info("generate_questions_all_llm_failed_using_template")
         return _local_template_questions(context=context, count=count, seed=seed)
 
@@ -588,7 +593,7 @@ def generate_dynamic_question(
 
     logger.info("generate_dynamic_question", provider=provider, index=index, target=target_count)
 
-    # Try LLM generation first
+    # Try LLM generation first (Gemini → Groq → local mirrors career RAG when primary is Gemini)
     if provider in {LLMProvider.GEMINI.value, LLMProvider.GROQ.value, "grok", LLMProvider.LOCAL.value, "local_llm"}:
         actual_provider = provider if provider != "grok" else LLMProvider.GROQ.value
         question = _llm_generate_single_question(
@@ -603,6 +608,35 @@ def generate_dynamic_question(
         if question:
             logger.info("generate_dynamic_question_llm_success", provider=actual_provider)
             return question
+
+        if actual_provider == LLMProvider.GEMINI.value:
+            groq_q = _llm_generate_single_question(
+                context=context,
+                asked_questions=asked_questions,
+                transcript=transcript,
+                seed=seed,
+                index=index,
+                target_count=target_count,
+                provider=LLMProvider.GROQ.value,
+            )
+            if groq_q:
+                logger.info("generate_dynamic_question_groq_fallback_success")
+                return groq_q
+
+        if actual_provider in {LLMProvider.GEMINI.value, LLMProvider.GROQ.value}:
+            local_q = _llm_generate_single_question(
+                context=context,
+                asked_questions=asked_questions,
+                transcript=transcript,
+                seed=seed,
+                index=index,
+                target_count=target_count,
+                provider=LLMProvider.LOCAL.value,
+            )
+            if local_q:
+                logger.info("generate_dynamic_question_local_fallback_success")
+                return local_q
+
         logger.info("generate_dynamic_question_llm_failed_using_template", provider=actual_provider)
 
     if not allow_template_fallback:

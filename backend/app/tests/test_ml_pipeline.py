@@ -77,6 +77,48 @@ def test_skill_overlap_and_missing_skills() -> None:
     assert result.skill_match_percentage == 66.67
 
 
+def test_eligibility_is_zero_when_no_requirements() -> None:
+    resume_like = {
+        "raw_text": "Worked as a designer and editor.",
+        "skills": ["figma", "photoshop"],
+        "estimated_experience_years": 2,
+        "education_level": None,
+    }
+    job_like = {
+        "description": "",
+        "required_skills": [],
+        "minimum_experience_years": 0,
+        "education_requirement": None,
+    }
+
+    result = compute_eligibility(resume_like=resume_like, job_like=job_like)
+
+    assert result.skill_match_percentage == 0.0
+    assert result.experience_match_percentage == 0.0
+    assert result.education_match_percentage == 0.0
+    assert result.eligibility_percentage == 0.0
+
+
+def test_eligibility_is_strict_for_low_skill_overlap() -> None:
+    resume_like = {
+        "raw_text": "Built React dashboards and UI components.",
+        "skills": ["react", "typescript"],
+        "estimated_experience_years": 6,
+        "education_level": "masters",
+    }
+    job_like = {
+        "description": "Must have Python, FastAPI, Redis, Docker and AWS.",
+        "required_skills": ["python", "fastapi", "redis", "docker", "aws"],
+        "minimum_experience_years": 0,
+        "education_requirement": None,
+    }
+
+    result = compute_eligibility(resume_like=resume_like, job_like=job_like)
+
+    assert result.skill_match_percentage == 0.0
+    assert result.eligibility_percentage == 0.0
+
+
 def test_question_generation_is_seed_deterministic() -> None:
     context = QuestionContext(
         role="Backend Engineer",

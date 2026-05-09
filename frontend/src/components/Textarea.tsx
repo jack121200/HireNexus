@@ -6,10 +6,10 @@ type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
 
 export const Textarea = ({ label, className = "", ...props }: TextareaProps) => {
   return (
-    <label className="flex w-full flex-col gap-2 text-sm text-textMuted">
-      {label && <span className="text-xs uppercase tracking-[0.2em] text-textMuted">{label}</span>}
+    <label className="flex w-full flex-col gap-1.5 text-sm">
+      {label && <span className="text-xs font-medium text-textMuted">{label}</span>}
       <textarea
-        className={`min-h-[120px] w-full rounded-xl border border-border/70 bg-panel/70 px-4 py-3 text-sm text-text outline-none transition placeholder:text-textMuted/70 focus:border-accent focus:ring-2 focus:ring-accent/30 ${className}`}
+        className={`min-h-[120px] w-full rounded-lg border border-border bg-panelMuted px-3.5 py-3 text-sm text-text outline-none transition-all duration-150 placeholder:text-textDim focus:border-accent focus:ring-2 focus:ring-accent/20 resize-y ${className}`}
         {...props}
       />
     </label>

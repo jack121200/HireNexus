@@ -24,6 +24,7 @@ from app.routes import (
     hr_notifications,
     voice,
     ws,
+    career_guide,
 )
 from app.services.realtime import start_realtime, stop_realtime
 
@@ -34,9 +35,14 @@ logger = get_logger(__name__)
 
 app = FastAPI(title=settings.app_name, version="0.1.0")
 
+local_origin_regex = None
+if settings.environment.strip().lower() == "development":
+    local_origin_regex = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
+    allow_origin_regex=local_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -83,5 +89,8 @@ app.include_router(hr_chat.router)
 
 app.include_router(voice.router)
 app.include_router(ws.router)
+app.include_router(career_guide.router)
+from app.routes.vapi_webhook import router as vapi_webhook_router
+app.include_router(vapi_webhook_router)
 
 logger.info("app_started", app_name=settings.app_name, environment=settings.environment)

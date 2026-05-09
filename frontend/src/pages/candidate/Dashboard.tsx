@@ -96,135 +96,145 @@ export const CandidateDashboard = () => {
         setError((err as Error).message);
       }
     };
-
     load();
   }, []);
 
-  const primaryResume = resumes.find((resume) => resume.is_primary) ?? resumes[0];
+  const primaryResume = resumes.find((r) => r.is_primary) ?? resumes[0];
 
   const topMatches = useMemo(() => {
     return [...jobs]
-      .filter((job) => job.eligibility)
+      .filter((j) => j.eligibility)
       .sort((a, b) => (b.eligibility?.eligibility_percentage ?? 0) - (a.eligibility?.eligibility_percentage ?? 0))
       .slice(0, 3);
   }, [jobs]);
 
   const interviewStats = useMemo(() => {
-    const ai = interviews.filter((item) => item.type === "ai");
-    const mock = interviews.filter((item) => item.type === "mock");
-    return {
-      aiCount: ai.length,
-      mockCount: mock.length,
-      recent: interviews.slice(0, 3),
-    };
+    const ai = interviews.filter((i) => i.type === "ai");
+    const mock = interviews.filter((i) => i.type === "mock");
+    return { aiCount: ai.length, mockCount: mock.length, recent: interviews.slice(0, 3) };
   }, [interviews]);
 
   if (error) {
-    return <div className="text-danger">{error}</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-2">
+          <div className="text-danger text-sm">⚠ {error}</div>
+          <button onClick={() => window.location.reload()} className="text-xs text-accent hover:underline">
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 page-enter">
       <PageHeader
-        kicker="Candidate Suite"
-        title="Candidate Command Center"
-        subtitle="Your full career snapshot: resume strength, job matches, interviews, and activity in one place."
-        actions={(
+        title="Dashboard"
+        subtitle="Your career snapshot — resume strength, job matches, and interview performance."
+        actions={
           <>
             <Link to="/candidate/mock-interview">
-              <Button variant="secondary" size="sm">
-                Start Mock Interview
-              </Button>
+              <Button variant="secondary" size="sm">Mock Interview</Button>
             </Link>
             <Link to="/candidate/jobs">
               <Button size="sm">Browse Jobs</Button>
             </Link>
           </>
-        )}
+        }
       />
 
-      {!summary && <div className="text-textMuted">Loading dashboard...</div>}
+      {/* Loading skeleton */}
+      {!summary && (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-28 rounded-xl shimmer" />
+          ))}
+        </div>
+      )}
 
+      {/* Stats */}
       {summary && (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <StatCard tone="accent" label="Resume Score" value={`${summary.resume_score.toFixed(1)}%`} description="Latest eligibility strength" />
-          <StatCard tone="cool" label="Jobs Applied" value={summary.jobs_applied} description="Active applications" />
-          <StatCard tone="warm" label="Shortlisted" value={summary.jobs_shortlisted} description="Shortlisted by HR" />
+          <StatCard icon="📄" label="Resume Score" value={`${summary.resume_score.toFixed(1)}%`} description="Latest eligibility strength" />
+          <StatCard icon="📬" label="Jobs Applied" value={summary.jobs_applied} description="Active applications" trend="up" />
+          <StatCard icon="⭐" label="Shortlisted" value={summary.jobs_shortlisted} description="Selected by HR" />
           <StatCard
-            tone="accent"
-            label="Interview Performance"
-            value={`${summary.interview_performance.total_completed}`}
-            description={`AI Avg ${summary.interview_performance.ai_average.toFixed(1)} - Mock Avg ${summary.interview_performance.mock_average.toFixed(1)}`}
+            icon="🎯"
+            label="Interviews"
+            value={summary.interview_performance.total_completed}
+            description={`AI Avg ${summary.interview_performance.ai_average.toFixed(1)} · Mock Avg ${summary.interview_performance.mock_average.toFixed(1)}`}
           />
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-        <Card variant="glass" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm uppercase tracking-wide text-textMuted">Profile Status</div>
-              <div className="text-lg font-semibold text-white">Candidate Snapshot</div>
-            </div>
+      {/* Profile + Interview momentum */}
+      <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+        {/* Profile Card */}
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-text">Profile Snapshot</h2>
             <Badge tone={primaryResume ? "success" : "warning"}>
-              {primaryResume ? "Resume Ready" : "Resume Missing"}
+              {primaryResume ? "Resume Ready" : "Upload Resume"}
             </Badge>
           </div>
-          <div className="grid gap-3 md:grid-cols-3">
-            <div className="rounded-lg border border-border bg-panelMuted p-3 text-sm">
-              <div className="text-xs uppercase text-textMuted">Primary Resume</div>
-              <div className="mt-2 font-semibold text-white">{primaryResume?.file_name ?? "Upload a resume"}</div>
+
+          <div className="grid gap-3 sm:grid-cols-3 mb-4">
+            <div className="rounded-lg bg-panelMuted border border-border p-3">
+              <div className="text-xs text-textMuted">Primary Resume</div>
+              <div className="mt-1 text-sm font-medium text-text truncate">{primaryResume?.file_name ?? "—"}</div>
             </div>
-            <div className="rounded-lg border border-border bg-panelMuted p-3 text-sm">
-              <div className="text-xs uppercase text-textMuted">Experience</div>
-              <div className="mt-2 font-semibold text-white">
-                {primaryResume?.estimated_experience_years ?? "N/A"} yrs
-              </div>
+            <div className="rounded-lg bg-panelMuted border border-border p-3">
+              <div className="text-xs text-textMuted">Experience</div>
+              <div className="mt-1 text-sm font-medium text-text">{primaryResume?.estimated_experience_years ?? "—"} yrs</div>
             </div>
-            <div className="rounded-lg border border-border bg-panelMuted p-3 text-sm">
-              <div className="text-xs uppercase text-textMuted">Education</div>
-              <div className="mt-2 font-semibold text-white">{primaryResume?.education_level ?? "N/A"}</div>
+            <div className="rounded-lg bg-panelMuted border border-border p-3">
+              <div className="text-xs text-textMuted">Education</div>
+              <div className="mt-1 text-sm font-medium text-text">{primaryResume?.education_level ?? "—"}</div>
             </div>
           </div>
+
           <div>
-            <div className="text-xs uppercase text-textMuted">Top Skills</div>
-            <div className="mt-2 flex flex-wrap gap-2 text-xs">
+            <div className="text-xs text-textMuted mb-2">Top Skills</div>
+            <div className="flex flex-wrap gap-1.5">
               {(primaryResume?.extracted_skills ?? []).slice(0, 10).map((skill) => (
-                <span key={skill} className="rounded-full border border-border px-2 py-1 text-textMuted">
+                <span key={skill} className="rounded-md bg-panelMuted border border-border px-2 py-0.5 text-xs text-textMuted">
                   {skill}
                 </span>
               ))}
               {!primaryResume?.extracted_skills?.length && (
-                <span className="text-textMuted">No skills extracted yet</span>
+                <span className="text-xs text-textDim">No skills extracted yet</span>
               )}
             </div>
           </div>
         </Card>
 
-        <Card variant="glass" className="space-y-4">
-          <div className="text-sm uppercase tracking-wide text-textMuted">Interview Momentum</div>
-          <div className="text-lg font-semibold text-white">Your Practice and AI Sessions</div>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-lg border border-border bg-panelMuted p-3 text-sm">
-              <div className="text-xs uppercase text-textMuted">AI Interviews</div>
-              <div className="mt-2 text-2xl font-semibold text-white">{interviewStats.aiCount}</div>
+        {/* Interview Momentum */}
+        <Card>
+          <h2 className="text-sm font-semibold text-text mb-4">Interview Momentum</h2>
+
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="rounded-lg bg-panelMuted border border-border p-3 text-center">
+              <div className="text-2xl font-bold text-text">{interviewStats.aiCount}</div>
+              <div className="text-xs text-textMuted mt-1">AI Interviews</div>
             </div>
-            <div className="rounded-lg border border-border bg-panelMuted p-3 text-sm">
-              <div className="text-xs uppercase text-textMuted">Mock Interviews</div>
-              <div className="mt-2 text-2xl font-semibold text-white">{interviewStats.mockCount}</div>
+            <div className="rounded-lg bg-panelMuted border border-border p-3 text-center">
+              <div className="text-2xl font-bold text-text">{interviewStats.mockCount}</div>
+              <div className="text-xs text-textMuted mt-1">Mock Sessions</div>
             </div>
           </div>
+
           <div>
-            <div className="text-xs uppercase text-textMuted">Recent Sessions</div>
-            <div className="mt-2 space-y-2 text-sm">
-              {interviewStats.recent.length === 0 && <div className="text-textMuted">No interviews yet.</div>}
+            <div className="text-xs text-textMuted mb-2">Recent Sessions</div>
+            <div className="space-y-2">
+              {interviewStats.recent.length === 0 && <div className="text-xs text-textDim">No interviews yet.</div>}
               {interviewStats.recent.map((item) => (
-                <div key={item.id} className="flex items-center justify-between rounded-md border border-border bg-panelMuted px-3 py-2">
+                <div key={item.id} className="flex items-center justify-between rounded-lg bg-panelMuted border border-border px-3 py-2">
                   <div>
-                    <div className="font-semibold text-white">{item.type.toUpperCase()} Interview</div>
-                    <div className="text-xs text-textMuted">{new Date(item.created_at).toLocaleString()}</div>
+                    <div className="text-sm font-medium text-text">{item.type === "ai" ? "AI" : "Mock"} Interview</div>
+                    <div className="text-xs text-textDim">{new Date(item.created_at).toLocaleDateString()}</div>
                   </div>
-                  <div className="text-xs text-textMuted">Score: {item.overall_score?.toFixed(1) ?? "Pending"}</div>
+                  <div className="text-sm font-medium text-accent">{item.overall_score?.toFixed(1) ?? "—"}</div>
                 </div>
               ))}
             </div>
@@ -232,58 +242,55 @@ export const CandidateDashboard = () => {
         </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-        <Card variant="glass" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm uppercase tracking-wide text-textMuted">Job Matches</div>
-              <div className="text-lg font-semibold text-white">Top Roles For You</div>
-            </div>
-            <Badge tone="info">Live eligibility</Badge>
+      {/* Job matches + Notifications */}
+      <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+        {/* Job matches */}
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-text">Top Job Matches</h2>
+            <Badge tone="info">Live Eligibility</Badge>
           </div>
-          <div className="space-y-3">
-            {topMatches.length === 0 && <div className="text-textMuted">Add a resume to unlock matches.</div>}
+          <div className="space-y-2">
+            {topMatches.length === 0 && <div className="text-xs text-textDim">Add a resume to unlock matches.</div>}
             {topMatches.map((job) => (
-              <div key={job.id} className="rounded-lg border border-border bg-panelMuted p-3">
+              <Link key={job.id} to={`/candidate/jobs/${job.id}`} className="block rounded-lg bg-panelMuted border border-border p-3 card-interactive">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-semibold text-white">{job.title}</div>
-                    <div className="text-xs text-textMuted">
-                      {job.location || "Remote"} - {job.employment_type || "Full-time"}
-                    </div>
+                    <div className="text-sm font-medium text-text">{job.title}</div>
+                    <div className="text-xs text-textDim">{job.location || "Remote"} · {job.employment_type || "Full-time"}</div>
                   </div>
-                  <div className="text-sm text-white">
-                    {job.eligibility?.eligibility_percentage.toFixed(1)}%
+                  <div className="text-sm font-semibold text-success">{job.eligibility?.eligibility_percentage.toFixed(0)}%</div>
+                </div>
+                {(job.eligibility?.missing_skills?.length ?? 0) > 0 && (
+                  <div className="mt-2 text-xs text-textDim">
+                    Missing: {job.eligibility?.missing_skills.slice(0, 3).join(", ")}
                   </div>
-                </div>
-                <div className="mt-2 text-xs text-textMuted">
-                  Missing skills: {job.eligibility?.missing_skills.slice(0, 3).join(", ") || "None"}
-                </div>
-              </div>
+                )}
+              </Link>
             ))}
           </div>
         </Card>
 
-        <Card variant="glass" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm uppercase tracking-wide text-textMuted">Notifications</div>
-              <div className="text-lg font-semibold text-white">Recent Updates</div>
-            </div>
-            {summary && <Badge tone="warning">Unread {summary.notifications_unread}</Badge>}
+        {/* Notifications */}
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-text">Notifications</h2>
+            {summary && summary.notifications_unread > 0 && (
+              <Badge tone="warning">{summary.notifications_unread} unread</Badge>
+            )}
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
+            {notifications.length === 0 && <div className="text-xs text-textDim">No notifications yet.</div>}
             {notifications.slice(0, 5).map((notif) => (
-              <div key={notif.id} className="rounded-lg border border-border bg-panelMuted p-3">
+              <div key={notif.id} className={`rounded-lg border p-3 ${notif.is_read ? "border-border bg-panelMuted" : "border-accent/20 bg-accent/5"}`}>
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-semibold text-white">{notif.title}</div>
-                  {!notif.is_read && <span className="text-xs text-accent">New</span>}
+                  <div className="text-sm font-medium text-text">{notif.title}</div>
+                  {!notif.is_read && <span className="h-2 w-2 rounded-full bg-accent" />}
                 </div>
-                <div className="mt-1 text-xs text-textMuted">{notif.body}</div>
-                <div className="mt-2 text-[11px] text-textMuted">{new Date(notif.created_at).toLocaleString()}</div>
+                <div className="mt-1 text-xs text-textMuted line-clamp-2">{notif.body}</div>
+                <div className="mt-2 text-[11px] text-textDim">{new Date(notif.created_at).toLocaleString()}</div>
               </div>
             ))}
-            {notifications.length === 0 && <div className="text-textMuted">No notifications yet.</div>}
           </div>
         </Card>
       </div>

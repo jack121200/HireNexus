@@ -48,6 +48,7 @@ from app.services.ml import (
 )
 from app.services.notification_service import get_unread_count, serialize_notification
 from app.services.realtime import broadcast_user
+from app.services.vapi.prompt_builder import PromptBuilder, JobData, CandidateData, MockSettings
 
 
 router = APIRouter(prefix="/api/candidate/interviews", tags=["candidate-interviews"])
@@ -235,6 +236,111 @@ def create_mock(
         jd_text=payload.jd_text,
     )
     return InterviewResponse(interview=serialize_interview(interview))
+
+
+@router.post("/{interview_id}/start-vapi")
+async def start_vapi(
+    interview_id: int,
+    current_user: User = Depends(get_current_candidate),
+    db: Session = Depends(get_db),
+) -> dict:
+    """
+    Returns the dynamic system prompt and first message for this interview.
+    The frontend Vapi SDK uses these to start the call directly.
+    """
+    interview = get_interview(db, interview_id=interview_id)
+    assert_interview_access(db, interview=interview, user=current_user)
+
+    # Map resume to CandidateData
+    resume = db.get(Resume, interview.resume_id) if interview.resume_id else None
+
+    candidate_skills = []
+    experience_years = 0
+    candidate_projects = []
+    education = ""
+    candidate_name = current_user.full_name or "Candidate"
+
+    if resume:
+        rd = resume.parsed_json or {}
+        raw_skills = rd.get("skills", [])
+        candidate_skills = [s.get("name", "") if isinstance(s, dict) else str(s) for s in raw_skills] if isinstance(raw_skills, list) else []
+        experience_years = rd.get("experience_years", 0)
+        jobs_exp = rd.get("experience", [])
+        if isinstance(jobs_exp, list):
+            for j in jobs_exp:
+                if isinstance(j, dict) and j.get("description"):
+                    candidate_projects.append(j.get("description"))
+
+    candidate_data = CandidateData(
+        name=candidate_name,
+        skills=candidate_skills,
+        experience_years=experience_years,
+        projects=candidate_projects,
+        education=education,
+        previous_roles=[]
+    )
+
+    if interview.type.value == "mock":
+        report_data = interview.report_json or {}
+        context = report_data.get("context", {})
+        focus_skills = [context.get("role", "SDE")]
+        mock_settings = MockSettings(
+            focus_skills=focus_skills,
+            difficulty="medium",
+            duration_minutes=30
+        )
+        system_prompt = PromptBuilder.build_mock_interview_prompt(candidate_data, mock_settings)
+        variable_values = PromptBuilder.build_variable_values(candidate_data, mock=mock_settings)
+    else:
+        job = db.get(Job, interview.job_id) if interview.job_id else None
+        job_company_name = "HireNexus Client"
+        if job and job.company_id:
+            from app.models.company import Company
+            comp = db.get(Company, job.company_id)
+            if comp:
+                job_company_name = comp.name
+
+        job_data = JobData(
+            role=job.title if job else "Software Engineer",
+            description=job.description if job else "N/A",
+            required_skills=job.required_skills if job and job.required_skills else [],
+            experience_required=f"{job.minimum_experience_years if job else 0} years",
+            company_name=job_company_name,
+        )
+        system_prompt = PromptBuilder.build_job_interview_prompt(job_data, candidate_data)
+        variable_values = PromptBuilder.build_variable_values(candidate_data, job=job_data)
+
+    candidate_first_name = variable_values.get("candidateName", candidate_name.split()[0])
+    interview_type_label = variable_values.get("interviewType", "technical")
+    role_name = variable_values.get("roleName", "Software Engineer")
+    duration = variable_values.get("duration", "30")
+
+    first_message = (
+        f"Hi {candidate_first_name}, I'm Sarah from HireNexus. "
+        f"I'll be conducting your {interview_type_label} interview today for the {role_name} role. "
+        f"This will take about {duration} minutes. Shall we begin?"
+    )
+
+    # Build display tags safely (context only exists for mock branch)
+    if interview.type.value == "mock":
+        report_data = interview.report_json or {}
+        mock_ctx = report_data.get("context", {})
+        tags = [mock_ctx.get("role", "Practice")]
+    elif job and job.required_skills:
+        tags = (job.required_skills or [])[:4]
+    else:
+        tags = []
+
+    return {
+        "interview_id": interview.id,
+        "system_prompt": system_prompt,
+        "first_message": first_message,
+        "role_name": role_name,
+        "interview_type": interview_type_label,
+        "candidate_name": candidate_name,
+        "duration_minutes": duration,
+        "tags": tags,
+    }
 
 
 @router.get("/{interview_id}/report.pdf")
@@ -524,21 +630,27 @@ def interview_turn(
                 )
         elif move_on:
             move_on_reason = "model_move_on"
-        elif probe_count < probe_limit:
-            probe_used = True
-            move_on = False
-            move_on_reason = "default_probe"
-            probe_counts[question_key] = probe_count + 1
-            next_question = QuestionItem(
-                id=f"{current_question.id}_probe_{probe_counts[question_key]}",
-                question="Can you give one concrete example from your work to support that?",
-                difficulty=current_question.difficulty,
-                category=current_question.category,
-                rubric_points=current_question.rubric_points,
-            )
         else:
-            move_on = True
-            move_on_reason = "probe_limit_reached"
+            # LLM returned no followup and didn't say move_on.
+            # Only probe if answer was very short / clearly incomplete.
+            answer_word_count = len(answer_text.split())
+            is_very_short = answer_word_count < 15
+            if is_very_short and probe_count < probe_limit:
+                probe_used = True
+                move_on = False
+                move_on_reason = "short_answer_probe"
+                probe_counts[question_key] = probe_count + 1
+                next_question = QuestionItem(
+                    id=f"{current_question.id}_probe_{probe_counts[question_key]}",
+                    question="Can you elaborate a bit more on that with a specific example?",
+                    difficulty=current_question.difficulty,
+                    category=current_question.category,
+                    rubric_points=current_question.rubric_points,
+                )
+            else:
+                # Answer was complete — move on without unnecessary probing
+                move_on = True
+                move_on_reason = "answer_complete_move_on"
 
     done = False
     if move_on:

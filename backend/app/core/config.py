@@ -12,13 +12,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
+ENV_FILES = (
+    BASE_DIR.parent / ".env",
+    BASE_DIR / ".env",
+)
 
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=ENV_FILES,
         env_file_encoding="utf-8",
         extra="ignore",
     )
@@ -33,13 +37,20 @@ class Settings(BaseSettings):
     jwt_alg: str = Field(default="HS256", alias="JWT_ALG")
     jwt_expires_min: int = Field(default=60 * 24 * 7, alias="JWT_EXPIRES_MIN")
 
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"], alias="CORS_ORIGINS")
+    cors_origins: list[str] = Field(
+        default_factory=lambda: [
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://localhost:5175",
+        ],
+        alias="CORS_ORIGINS",
+    )
 
     upload_dir: Path = BASE_DIR / "uploads"
     upload_max_mb: int = 10
     upload_allowed_extensions: set[str] = {".pdf", ".docx", ".txt"}
 
-    qgen_provider: str = Field(default="local", alias="QGEN_PROVIDER")
+    qgen_provider: str = Field(default="gemini", alias="QGEN_PROVIDER")
     groq_api_key: str | None = Field(default=None, alias="GROQ_API_KEY")
     groq_api_base: str = Field(default="https://api.groq.com/openai/v1", alias="GROQ_API_BASE")
     groq_model: str = Field(default="llama-3.1-8b-instant", alias="GROQ_MODEL")
@@ -55,6 +66,9 @@ class Settings(BaseSettings):
     local_llm_model: str = Field(default="llama3.1", alias="LOCAL_LLM_MODEL")
     local_llm_api_key: str | None = Field(default=None, alias="LOCAL_LLM_API_KEY")
     local_llm_timeout_seconds: float = Field(default=15.0, alias="LOCAL_LLM_TIMEOUT_SECONDS")
+
+    vapi_private_key: str | None = Field(default=None, alias="VAPI_PRIVATE_KEY")
+    vapi_assistant_base_id: str | None = Field(default=None, alias="VAPI_ASSISTANT_BASE_ID")
 
     assemblyai_api_key: str | None = Field(default=None, alias="ASSEMBLYAI_API_KEY")
     assemblyai_realtime_base: str = Field(

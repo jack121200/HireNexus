@@ -1,0 +1,443 @@
+================================================================
+HIRENEXUS CAREER GUIDANCE KNOWLEDGE BASE
+ROLE: SDE (General)
+TOPICS: T1 through T8
+AUDIENCE: All Levels (Fresher to Senior)
+MARKET: India + Global
+CHUNKING NOTE: Split on === boundaries first, then on H2 (##) boundaries.
+Each H2 section is designed to be 350-550 words. Maintain 100-word overlap
+between consecutive chunks from the same topic section.
+================================================================
+
+===
+TOPIC: T1 — Role Overview
+ROLE: SDE (General)
+AUDIENCE: All Levels
+TAGS: role-overview, sde, day-to-day, work-culture, india-tech
+===
+
+# SDE (General) — Role Overview: What This Job Actually Looks Like
+
+## The Real Definition of an SDE
+
+A Software Development Engineer — called SDE in India and most of the world — is someone whose job is to convert ambiguous problems into reliable, working software. That sounds simple. It is not. The ambiguity is the hard part. No one hands you a fully defined problem with a clean solution already designed. You get a user complaint, a business requirement, a performance alert, or a half-formed product idea — and your job is to think it through, design a solution, build it, test it, and ship it without breaking what already works.
+
+In India's tech landscape, SDE is the most common and most sought-after role in the entire industry. It spans every company type — from TCS handling government projects to Zepto running 10-minute grocery delivery to Google building search for a billion users. The common thread across all these companies is the same core job: take a problem, solve it in code, ship it.
+
+What separates great SDEs from average ones is not how fast they type or how many LeetCode problems they've solved. It is the ability to ask the right questions before writing a single line of code. "Why does this feature need to exist?" "What happens if this API goes down?" "How many users will hit this endpoint simultaneously?" Engineers who ask these questions early write software that survives contact with reality. Engineers who skip these questions often write beautiful code that breaks at the worst possible time.
+
+One more thing nobody tells freshers: your code is not the product. The product is the working software that users experience. Your code is just the means to that end. This mindset shift — from "I wrote good code" to "I delivered a working outcome" — is what separates junior engineers from senior ones, and it usually takes 2–3 years to fully internalize.
+
+## What Your Day Actually Looks Like Across Seniority Levels
+
+The day-to-day of an SDE is not uniform. It shifts dramatically as you grow, and understanding this shift helps you plan your career progression intentionally.
+
+At the SDE-1 level (0–2 years of experience), your day is approximately: 60–70% writing and debugging code, 15% in meetings (standups, sprint planning), 10% reading code written by others, and 5% documentation. You're mostly executing — taking a well-defined ticket, implementing it, getting it reviewed, and merging it. The most important skill at this stage is speed of learning, not speed of execution. The engineers who grow fastest in their first two years are the ones who read every PR in their codebase, not just the ones they are assigned to.
+
+At the SDE-2 level (2–5 years), the balance shifts. You're now spending 40–50% of your time writing code, 25–30% in design discussions and code reviews, and 15–20% in cross-functional meetings with product managers and designers. You're expected to take a loosely defined problem, break it into sub-tasks, estimate timelines, and lead the implementation. The gap between SDE-1 and SDE-2 is not primarily technical — it is ownership. SDE-2s own outcomes, not just tasks.
+
+At the Senior SDE level (5+ years), some engineers spend more time in meetings than writing code — and this is intentional. Senior engineers design systems, influence technical decisions across teams, mentor junior engineers, and serve as the "connective tissue" between what engineering can build and what the business needs. The highest-impact seniors at companies like Flipkart, Razorpay, or Meesho are often the ones who have not written production code in weeks but have unblocked five other engineers through design reviews and architectural guidance.
+
+## The Three Company Types and What They Mean for Your Career
+
+Understanding where you work shapes how you grow as an SDE. The Indian tech market offers three distinct environments, each with its own trade-offs.
+
+**Product companies** — Flipkart, Swiggy, CRED, Zepto, Groww, Razorpay, PhonePe, Meesho, Urban Company — offer high ownership and direct user impact. When you ship a feature at Swiggy, millions of Indians interact with it the same day. This is both exciting and terrifying, and it makes you grow fast. The downside is that product companies often have significant tech debt, ambiguous requirements, and fast-changing priorities. You must be comfortable with uncertainty.
+
+**Service companies** — TCS, Infosys, Wipro, HCL, Cognizant — are where the majority of India's 5+ million software engineers work. These companies offer structure, stability, and a clear path to growth within a defined ladder. The work is often client-driven and involves maintaining or enhancing existing systems. The learning curve after 2–3 years can plateau, which is why many engineers move to product companies after gaining foundational experience. If you join a service company, deliberately seek out the most complex client projects and resist the comfort of repetitive work.
+
+**MNC engineering centres** — Google, Microsoft, Amazon, Adobe, Atlassian, Uber, LinkedIn, all of which have large engineering offices in Hyderabad, Bengaluru, and Pune — represent the most coveted tier for most Indian engineers. The compensation is the highest, the engineering culture is world-class, and the problems are genuinely hard and interesting. The bar to enter is high, particularly for DSA-heavy interviews, but the career compounding effect of working at one of these companies for even 2–3 years is enormous. Ex-FAANG engineers in India command premium salaries everywhere they go next.
+
+## What Companies Actually Evaluate You On
+
+Across all levels and all company types, your performance as an SDE is measured on three dimensions that never change, even as their relative weights shift with seniority.
+
+**Technical execution** is table stakes. Does your code work? Is it readable? Does it handle edge cases? Does it perform under load? Does it fail gracefully when dependencies are unavailable? At junior levels this is 70% of your evaluation. At senior levels it drops to 40% — not because it matters less, but because it is assumed.
+
+**Reliability and ownership** is what separates engineers who get promoted from engineers who don't. Do you ship on time? Do you raise blockers early? Do your features cause production incidents, and when they do, do you own the debugging and postmortem? Indian product companies in particular — especially in fintech — are extremely sensitive to reliability. An engineer who ships fast but breaks things frequently is valued less than one who ships slightly slower but maintains a clean production record.
+
+**Communication and collaboration** is the dimension most engineering schools in India do not prepare you for. Can you write a design document that your team can review? Can you explain a technical trade-off to a non-technical PM clearly? Can you disagree with a senior engineer respectfully and with data to back your position? The engineers who grow fastest in Indian product companies are almost always the ones who communicate clearly. Promotions at companies like Amazon, Flipkart, and Google are heavily influenced by how well your peers and partners experience working with you.
+
+===
+TOPIC: T2 — Skill Roadmap
+ROLE: SDE (General)
+AUDIENCE: Fresher to Senior
+TAGS: skill-roadmap, learning-path, fresher, career-growth, india-tech
+===
+
+# SDE Skill Roadmap: From Fresher to Senior Engineer
+
+## Phase 1 — Foundations (Month 1–3): Get the Core Right Before Anything Else
+
+The most common mistake Indian engineering graduates make is jumping to frameworks, certifications, and cloud tools before their foundations are solid. This creates engineers who can run a Spring Boot project but cannot explain why a HashMap has O(1) average lookup, or who can write SQL queries but do not understand what a database index actually does. Foundation gaps do not disappear with time — they compound into larger problems.
+
+**Language mastery is the first priority.** Pick one language and go genuinely deep into it before touching a second. In India's job market, Java is the safest choice — it is used at Amazon, Flipkart, PhonePe, and most service companies, and the sheer volume of Java roles means you will always have options. Python is the right choice if you are targeting ML-adjacent roles or data-heavy startups. Node.js is a good option if you want to build full-stack quickly at a startup. Pick one. Depth beats breadth at this stage.
+
+Going deep means understanding how your language handles memory (stack vs heap allocation), how it manages concurrency (threads, async, coroutines depending on the language), how exceptions propagate and how the runtime handles them, and what happens at compile or interpretation time. These are not academic questions — they become directly relevant when you are debugging a memory leak in production or trying to understand why a concurrent API is returning inconsistent results.
+
+**DSA is your interview ticket.** In India, Data Structures and Algorithms is the mandatory entry test for every product company and MNC. You cannot get into Google, Amazon, Flipkart, Razorpay, or any top-tier company without clearing DSA rounds. Use LeetCode as your primary platform. The minimum bar for a first job at a good product company is 100–150 problems solved, with a focus on medium difficulty. The non-negotiable topics: arrays, strings, linked lists, stacks, queues, binary trees, BSTs, graphs (BFS and DFS), hashmaps, and sorting algorithms. Do not memorise solutions — understand the pattern behind each problem type.
+
+**Git is not optional — it is oxygen.** Learn Git properly, not just the three commands you need to push code. Understand branching strategies (feature branches, Gitflow), the difference between merge and rebase, how to resolve conflicts without panic, cherry-picking, and how to write meaningful commit messages. Every team you ever join will assume Git fluency from Day 1. There is no grace period.
+
+**Linux and the command line.** Most production systems run on Linux. Being comfortable in the terminal — navigating directories, searching with grep, tailing logs with `tail -f`, checking processes with `ps` and `top`, connecting to remote servers with `ssh` — gives you the ability to debug real production problems. Engineers who can only debug on their local machine with a GUI are severely limited. Spend two weeks deliberately using the terminal for everything, even when a GUI would be faster.
+
+## Phase 2 — Building Real Things (Month 4–8): From Theory to Working Software
+
+Once your fundamentals are solid, the goal of phase two is simple: build complete, end-to-end working software. Not tutorials. Not YouTube clones. Projects that you actually care about, that have real edge cases, and that force you to make real design decisions.
+
+**Backend framework — pick one and build something.** In Java, the standard is Spring Boot. In Python, FastAPI is increasingly preferred for pure API work because of its async support and automatic documentation — Django is better for admin-heavy applications. In Node.js, Express.js is the baseline. The best way to learn any framework is to build a project with requirements you define yourself. A payment split application. A job board for your college. A bus booking system for your city. The constraint of a real project forces you to confront problems that no tutorial prepares you for.
+
+**Databases — both SQL and NoSQL.** Learn PostgreSQL or MySQL for relational data — write real queries with multiple JOINs, understand indexing (and why a missing index can make your query 1000x slower), understand transactions and what ACID properties actually guarantee. Then learn MongoDB for document data and Redis for caching and session storage. In Indian product company interviews, schema design questions are extremely common: "Design the database schema for a food delivery app." Practice designing schemas from scratch, thinking about normalization vs denormalization, and anticipating query patterns.
+
+**REST API design and HTTP fundamentals.** Understand HTTP methods and their semantics (GET vs POST vs PUT vs PATCH vs DELETE), status codes (not just 200 and 404 — know when to use 201, 400, 401, 403, 422, 429, 503), request/response structure, authentication patterns (JWT, OAuth2, API keys), and API versioning. Read Razorpay's API documentation or Stripe's documentation — they are among the best-designed APIs in the world and studying them teaches you more than most courses.
+
+**System design — awareness at this stage, not mastery.** You are not expected to design distributed systems at SDE-1, but you should understand the vocabulary and basic concepts. What does a load balancer do and why does it exist? What is caching and when should you use it? What is a message queue and when is it better than a direct API call? What is the difference between a monolith and microservices? The book "Designing Data-Intensive Applications" (DDIA) by Martin Kleppmann is the single best resource for this. Read even the first three chapters and your thinking about software architecture will change permanently.
+
+## Phase 3 — Thinking at System Scale (Month 9–18): Moving Beyond Your Code
+
+This is the phase where engineers diverge most sharply. Those who stay in execution mode — taking tickets, implementing features, staying within assigned scope — grow slowly. Those who start asking "why is the system designed this way?" and "what would break if we scaled this 10x?" grow rapidly and start getting noticed for senior roles.
+
+**Distributed systems fundamentals.** Learn about the CAP theorem — not to recite it in interviews but to genuinely understand why you cannot simultaneously have consistency, availability, and partition tolerance, and what trade-offs real systems make. Understand eventual consistency and when it is acceptable (social media likes counter) vs when it is dangerous (bank account balance). Study how Zomato, Swiggy, and PhonePe have architected their systems — their engineering blogs are public, detailed, and written by the engineers who built these systems.
+
+**Observability: if you cannot debug it in production, you have not finished building it.** Logging, metrics, and tracing are not optional extras. Learn structured logging — logging JSON objects with consistent fields rather than plain text strings, so logs can be searched and aggregated reliably. Understand log levels and what belongs at each level. Learn Prometheus for metrics collection and Grafana for visualization. Understand distributed tracing (Jaeger, Zipkin) at a conceptual level. When a production incident happens at 2 AM and you are on-call, observability is the difference between a 10-minute fix and a 3-hour nightmare.
+
+**Code quality and testing culture.** Learn unit testing deeply — not just how to write tests, but what makes a good test (fast, independent, repeatable, self-validating, small). Understand the difference between unit tests, integration tests, and end-to-end tests, and when each is appropriate. Learn about code coverage but also understand its limitations — 100% coverage does not mean bug-free code. Set up a CI/CD pipeline for your personal projects using GitHub Actions. Being able to write a GitHub Actions workflow that builds, tests, and lints your code is now expected at SDE-1 level at most Indian product companies.
+
+**System design practice.** Start solving High Level Design (HLD) problems seriously. Practice designing: a URL shortener (teaches hashing, databases, caching), a notification system (teaches async processing, message queues), a ride-sharing app like Ola (teaches geospatial data, real-time updates), a UPI payment system (teaches consistency, distributed transactions). Use Excalidraw for drawing architectures. Share your designs with senior engineers for feedback. System design is a skill that only improves through deliberate practice and feedback — reading about it is necessary but not sufficient.
+
+## Phase 4 — Senior Engineer Territory (18 Months and Beyond)
+
+At this stage, the goal is not to write more code — it is to have more impact. Senior engineers are evaluated not just on their own output but on how much they multiply the output of the people around them.
+
+**Technical leadership without a title.** Start writing design documents (also called tech specs or RFCs) for features you are building. A good design document describes the problem, the proposed solution, the alternatives considered and why they were rejected, the risks, and the open questions. Share it with your team before you start building. This habit — think in writing before coding — is one of the most reliable signals of senior engineering maturity and it is visible and valued at every top Indian company.
+
+**Cross-functional partnership.** Work closely with product managers. Understand the business metrics that your features are expected to move. An SDE at Swiggy who understands why cart abandonment rate matters will make better technical decisions than one who only cares about code elegance. When you understand the business outcome, you can push back on features that do not make sense, suggest simpler implementations that achieve the same goal, and flag technical risks before they become product problems.
+
+**Specialization.** After 18–24 months as a generalist, start identifying where you want to go deep. Platform engineering and developer tooling. ML infrastructure. Security engineering. Growth engineering. Mobile. The engineers who reach Staff Engineer or Principal Engineer levels in India's top companies are almost always specialists with a strong generalist foundation — T-shaped, not I-shaped. The specialization you choose should intersect your natural interests with market demand. Both matter.
+
+===
+TOPIC: T3 — Tools & Tech Stack
+ROLE: SDE (General)
+AUDIENCE: All Levels
+TAGS: tools, tech-stack, java, python, databases, devops, india-tech
+===
+
+# SDE Tools & Tech Stack: What You Actually Use at Work
+
+## The Absolute Baseline: Tools You Use Every Single Day
+
+Before we talk about specific technologies, understand this: tools are not the job. They are how you do the job. A great engineer can pick up a new tool in a week. The fundamentals — problem decomposition, debugging methodology, communication — are what take years to build. That said, tool fluency matters enormously for your productivity and your interview performance.
+
+**Git is the single most universal tool in software development.** Every company, every team, every project uses it. And yet an alarming number of engineers only know four commands: `git add`, `git commit`, `git push`, `git pull`. Invest time to learn Git properly. Interactive rebase (`git rebase -i`) lets you clean up your commit history before opening a PR — a habit that senior reviewers notice and appreciate. `git bisect` lets you binary-search through history to find the exact commit that introduced a bug. `git stash` saves your uncommitted work so you can switch branches cleanly. Learn cherry-picking for applying a specific commit from one branch to another. Understanding how Git actually works internally — that commits are snapshots, not diffs, that branches are just pointers to commits — makes you dramatically better at resolving conflicts and understanding error messages.
+
+For hosting, GitHub is the dominant platform at Indian product companies. GitLab is preferred by many European and fintech companies for its built-in CI/CD. Bitbucket is still common in enterprises running Atlassian stacks (Jira + Confluence + Bitbucket). Knowing GitHub well is sufficient for most Indian job searches.
+
+**Your IDE or editor shapes your daily productivity more than any other single tool.** IntelliJ IDEA is the standard for Java development — every Amazon, Flipkart, and Paytm Java engineer uses it. The investment in learning IntelliJ keyboard shortcuts pays back within days. The most valuable ones: `Cmd+Shift+F` for global search across the codebase, `Cmd+B` to jump to a method or class definition, `Cmd+Alt+L` for auto-formatting, `Shift+Shift` for searching everything, and the built-in debugger with breakpoints and expression evaluation. The debugger alone, once you learn to use it fluently, will save you more time than any productivity hack.
+
+VS Code is the standard for Python, JavaScript, TypeScript, Go, and everything else. Its extension ecosystem is what makes it powerful — install Pylance for Python intelligence, ESLint and Prettier for JavaScript code quality, GitLens for supercharged Git integration, Docker for container management, and REST Client for testing APIs directly from the editor without switching to Postman. PyCharm is better than VS Code for pure Python work at the expense of being heavier.
+
+## Backend Languages and Frameworks in the Indian Market
+
+**Java with Spring Boot** is the most in-demand combination in India. Amazon India, Flipkart, PhonePe, Paytm, HDFC's tech arm, and most large fintech companies run heavily on Java. Spring Boot makes building production-grade REST APIs fast — it handles dependency injection, configuration, embedded servers, and database connectivity out of the box. Key Spring concepts you must understand: the IoC container and how `@Autowired` and `@Component` work, Spring Data JPA for database access (understand the N+1 query problem and how to avoid it), Spring Security for authentication, and Spring Actuator for production health monitoring. The Spring ecosystem is large — you will not learn it all at once. Start with Spring Boot Web and Spring Data JPA. Everything else can be learned when you need it.
+
+**Python with FastAPI** is the preferred combination at data-heavy startups, ML-adjacent companies, and many newer product companies. FastAPI is fast to write, automatically generates API documentation via Swagger, and has excellent support for async programming. Django is the right choice when you need built-in admin panels, ORM, and a batteries-included approach — common for content platforms and internal tooling. Key Python tools every backend engineer should know: `pydantic` for data validation, `SQLAlchemy` for database ORM, `Celery` for background task processing, `pytest` for testing, and `poetry` or `pip` with `requirements.txt` for dependency management.
+
+**Go** is growing rapidly in India's infrastructure and fintech space. Razorpay, Juspay, and many developer-tools companies use Go for high-performance, low-latency services. Go's concurrency model — goroutines and channels — is elegant and powerful. If you are interested in systems programming, building developer tools, or working at companies that care deeply about performance, Go is a strong investment. The learning curve is lower than people expect — Go's simplicity is a feature, not a limitation.
+
+## Databases: What Every SDE Must Know
+
+**PostgreSQL** is the best general-purpose relational database, and it is the default choice at most Indian product companies building new systems. It supports JSON columns (so you get the flexibility of document storage within a relational database), has excellent indexing options (B-tree for equality and range queries, GIN for full-text search and JSONB containment, partial indexes for filtering), and its query planner is sophisticated enough to surprise you. Learn `EXPLAIN ANALYZE` — it shows you exactly how PostgreSQL executes your query, whether it is using indexes, and where the performance bottlenecks are. Every backend engineer who touches SQL should be fluent in reading query plans.
+
+**MySQL** remains dominant in legacy systems and many Indian enterprises. Know the important differences from PostgreSQL: MySQL's default storage engine is InnoDB (which supports transactions), JSON support is less mature, and some SQL features (like CTEs before MySQL 8.0) were unavailable. Most MySQL-specific interview questions at Indian companies will be around indexing, query optimization, and transaction isolation levels.
+
+**Redis** is the universal solution for three specific problems: caching (storing the results of expensive database queries so you do not repeat them), session storage (storing authenticated user sessions), and rate limiting (tracking how many requests a user has made in the last N seconds). Redis data structures — strings, hashes, lists, sets, sorted sets — are worth learning individually because each is optimized for different access patterns. Sorted sets, for example, make implementing leaderboards trivially easy. Redis is used at nearly every Indian product company and is a standard interview topic.
+
+**MongoDB** is the dominant NoSQL document database. Use it when your data is naturally document-shaped — when different records have different fields, when you need to store nested objects without flattening them into join tables, and when schema flexibility is important during rapid iteration. The key discipline with MongoDB is data modeling: because there are no joins, you must decide up front whether to embed related data or reference it, and the wrong choice creates painful migration problems later.
+
+## DevOps and Infrastructure: The Minimum Every SDE Must Know
+
+**Docker** is a baseline expectation at every Indian product company. Understanding containers — what they are, how they differ from virtual machines, how they share the host kernel — matters more than memorising Docker commands. Write Dockerfiles from scratch (not copied from StackOverflow). Understand multi-stage builds for reducing image size. Use Docker Compose for running multi-service local development environments (your application + its database + Redis, all running locally with one command). Being able to containerize an application cleanly is as expected as being able to write a for loop.
+
+**Kubernetes** is not something most SDE-1s are expected to master, but you need to understand what it does and how to interact with it. Kubernetes orchestrates containers across a cluster — it decides which machine runs which container, handles restarts when containers crash, scales up when traffic increases, and routes traffic to healthy instances. As an SDE, you mostly interact with Kubernetes through `kubectl` commands: `kubectl get pods` to see running services, `kubectl logs <pod>` to read logs, `kubectl describe <pod>` to debug a failing deployment. Companies like Swiggy, Zomato, and Dunzo run their entire infrastructure on Kubernetes. Knowing enough to deploy and debug your own services is expected by SDE-2.
+
+**CI/CD with GitHub Actions** is increasingly the standard. A basic GitHub Actions workflow that builds your project, runs tests, checks code formatting, and alerts on failure is something every SDE should be able to write. The YAML syntax is verbose but learnable. More importantly, understand the concept: every code change should be automatically validated before it touches the main branch. This is not a DevOps concern — it is a software quality concern, and it is owned by the engineers who write the code.
+
+===
+TOPIC: T4 — Learning Path
+ROLE: SDE (General)
+AUDIENCE: All Levels
+TAGS: learning-path, resources, books, courses, timeline, india-tech
+===
+
+# SDE Learning Path: Resources, Order, and Timeline
+
+## Before You Start: The Meta-Skill of Learning How to Learn
+
+Most engineers in India spend money on courses they never finish and time on tutorials they never apply. The highest-return learning strategy is not finding the perfect resource — it is building projects while consuming resources. Every concept you learn, immediately find a way to apply it to something you are building. The gap between "I watched a video about Redis" and "I built a rate limiter using Redis" is the gap between shallow and deep understanding. Structure your learning around projects, not around courses.
+
+The second most important meta-principle: learn from primary sources before secondary ones. The official Spring Boot documentation is better than most YouTube tutorials about Spring Boot. The PostgreSQL documentation is more accurate and more complete than any blog post. Primary sources are harder to read, but the discipline of reading them builds the skill of reading technical documentation — which is invaluable because documentation never goes out of date the way courses do.
+
+**Timeline note:** The timeline below assumes 3–5 hours of dedicated daily learning for someone starting from scratch or with a basic CS background. Adjust proportionally if you are learning part-time alongside college or a job.
+
+## Month 1–2: Language and DSA Foundation
+
+**For Java learners:**
+Start with "Core Java Volume I" by Cay Horstmann — it is dense but the most accurate Java fundamentals book available. Chapters 1–7 cover everything you need for the foundation. Supplement with "Effective Java" by Joshua Bloch after you have 2–3 months of experience — this book will permanently change how you write Java.
+
+For online learning, Telusko's Java playlist on YouTube is popular in India and covers basics well. For more depth, the official Oracle Java documentation and tutorials are surprisingly readable.
+
+**For Python learners:**
+"Python Crash Course" by Eric Matthes is the fastest way to get productive. Follow it with "Fluent Python" by Luciano Ramalho once you have 3–4 months of experience — this book teaches you to write Python the way Python is meant to be written, not the way a Java programmer would write Python.
+
+**DSA — spend minimum 6–8 weeks here:**
+"Data Structures and Algorithms Made Easy" by Narasimha Karumanchi is the most popular DSA book in India — widely available, well-organized, and explains patterns clearly. Use it alongside LeetCode. Do not grind random problems. Follow a structured approach: 2 weeks on arrays and strings, 2 weeks on linked lists, stacks, and queues, 2 weeks on trees and graphs. The NeetCode 150 problem list (available at neetcode.io) is the most curated set for interview preparation — every problem teaches a pattern.
+
+## Month 3–4: Backend Development and Databases
+
+**Spring Boot (Java):**
+The official Spring Boot Getting Started guides at spring.io are excellent and free. Follow the "Building a RESTful Web Service" guide first. Then build something real using what you learned. After 4–6 weeks with Spring Boot, read "Spring Boot in Action" by Craig Walls for depth. Do not try to learn the entire Spring ecosystem — focus on Spring Web, Spring Data JPA, and Spring Boot Actuator. Everything else comes when you need it.
+
+**FastAPI (Python):**
+The official FastAPI documentation (fastapi.tiangolo.com) is one of the best-written technical documentations in the Python ecosystem. Start there. Follow the entire tutorial section before touching any course. Then build a REST API for a real problem.
+
+**Databases:**
+"Learning SQL" by Alan Beaulieu for SQL fundamentals. Then "PostgreSQL: Up and Running" by Regina Obe for PostgreSQL specifically. Practice on db-fiddle.com or by running PostgreSQL locally with Docker. For Redis, the official Redis documentation at redis.io has excellent conceptual introductions to each data structure. Use the Redis CLI to experiment directly.
+
+**Project for this phase:** Build a complete backend API with a database — something with user registration, authentication, and at least 3 entities with relationships. Deploy it on a free tier of Railway or Render so it runs publicly. Having a live URL you can demo is worth more than a GitHub repo.
+
+## Month 5–8: System Design and Infrastructure Fundamentals
+
+**"Designing Data-Intensive Applications" by Martin Kleppmann** is the most important technical book an SDE can read. It covers databases, distributed systems, stream processing, and data consistency with a depth and clarity that no course matches. Read it slowly — it is not a book you skim. Chapters 1–3 (reliability, scalability, maintainability, data models, and storage engines) are foundational. Chapters 4–9 will transform your understanding of distributed systems. This book alone has helped thousands of Indian engineers crack Staff-level interviews.
+
+**System design practice:**
+Grokking the System Design Interview (on Educative.io) is the most popular structured resource for HLD preparation in India. It covers 15–20 common system design problems with step-by-step approaches. Supplement with the System Design Primer on GitHub (github.com/donnemartin/system-design-primer) — it is free, comprehensive, and excellent. For video content, Gaurav Sen's system design channel on YouTube is India's best system design content, made by an ex-Uber engineer who understands both the Indian market and global systems deeply.
+
+**Docker and Linux:**
+"The Linux Command Line" by William Shotts is available free online at linuxcommand.org and is the best introduction to the Linux terminal. For Docker, the official Docker documentation's "Get Started" guide is sufficient for fundamentals. Build the habit of Dockerizing every project you create — this practice makes the concepts stick faster than any course.
+
+## Month 9–18: Depth and Specialization Resources
+
+**For distributed systems depth:**
+"Understanding Distributed Systems" by Roberto Vitillo is a more accessible complement to DDIA — shorter, more practical, and more focused on engineering decisions rather than theory. Read it alongside DDIA.
+
+**For observability:**
+"Observability Engineering" by Charity Majors, Liz Fong-Jones, and George Miranda is the definitive book on production observability — logging, metrics, and tracing explained with real-world context. Prometheus and Grafana official documentation are the best practical references.
+
+**Engineering blogs to read regularly:**
+The following blogs represent some of the best engineering writing in the industry and are read by senior engineers globally: Uber Engineering Blog (eng.uber.com), Netflix Tech Blog (netflixtechblog.com), Razorpay Engineering Blog (engineering.razorpay.com), Swiggy Tech Blog (bytes.swiggy.com), Zepto Engineering Blog, Gojek Tech Blog. These blogs give you real-world context for the concepts you are learning — they show you how actual companies solve actual problems at scale.
+
+**Certifications worth considering in India:**
+AWS Certified Solutions Architect — Associate is the most valuable cloud certification for SDEs in India. It is recognized everywhere, the preparation teaches you cloud fundamentals deeply, and it adds visible signal to your resume. Budget 6–8 weeks of preparation. Avoid collecting multiple certifications without building real projects with the technology — certifications without projects are hollow.
+
+===
+TOPIC: T5 — Interview Prep
+ROLE: SDE (General)
+AUDIENCE: All Levels
+TAGS: interview-prep, dsa, system-design, behavioral, india-companies, faang
+===
+
+# SDE Interview Preparation: How to Crack Every Round
+
+## Understanding the Indian Tech Interview Landscape
+
+The interview process at Indian tech companies has become increasingly structured and predictable over the last five years, largely because companies like Amazon and Google have set a standard that mid-market product companies have adopted. Understanding the structure before you start preparing saves you from spending months preparing for the wrong things.
+
+Most SDE interviews in India follow a 3–5 round process. At large product companies and MNCs (Google, Amazon, Microsoft, Flipkart, Razorpay), the structure is typically: one or two DSA coding rounds, one or two system design rounds (Low Level Design and/or High Level Design), and one behavioral/culture-fit round. At early-stage startups, there is often one technical round covering everything from coding to architecture to past project discussion, followed by a founder or senior engineer conversation.
+
+The critical insight is this: every company is testing for the same underlying things — problem-solving ability, system thinking, communication clarity, and cultural fit. The format varies; the substance does not.
+
+**Resume screening comes first.** In India, your resume is often screened by an ATS (Applicant Tracking System) before a human sees it. Include the exact technology keywords from the job description. Keep your resume to one page for 0–5 years of experience. Use numbers wherever possible: "Reduced API latency by 40%" is stronger than "Improved API performance." Projects matter enormously at the fresher and early career level — a live deployed project is worth more than a certificate.
+
+## DSA Round: The Most Feared and Most Conquerable Round
+
+The DSA round is where most candidates fail, and it is the round that most Indians over-prepare for in the wrong way. The mistake is grinding 500+ random LeetCode problems and hoping pattern recognition kicks in during interviews. The correct approach is internalizing a small set of problem-solving patterns deeply.
+
+There are approximately 15 core patterns that cover 80% of DSA interview questions: two pointers, sliding window, binary search, fast and slow pointers, merge intervals, cyclic sort, in-place reversal of linked lists, BFS, DFS, two heaps, subsets, modified binary search, top K elements, K-way merge, and dynamic programming. For each pattern, understand: what type of problem does this pattern solve? What is the template structure? What are 3–5 problems that use this pattern? Once you can identify the pattern from a problem statement and apply the template, DSA rounds become significantly more manageable.
+
+In the interview room (or video call), communicate every step of your thinking. Indian candidates often make the mistake of going silent and thinking for 3 minutes before saying anything. Interviewers at Amazon, Flipkart, and Google explicitly want to hear your thinking process. Start by restating the problem. Clarify constraints (array size, data types, edge cases). Then say the brute force approach out loud. Then optimize. This verbal process demonstrates the problem-solving communication skill that separates good candidates from great ones — and it gives your interviewer the opportunity to hint you in the right direction if you're going down the wrong path.
+
+Time complexity and space complexity must be stated for every solution. Do not wait for the interviewer to ask. After coding, walk through your solution with a concrete example, then check edge cases explicitly: empty input, single element, all duplicates, negative numbers, overflow.
+
+## Low Level Design (LLD) Round: The Most Misunderstood Round
+
+LLD rounds — also called Object-Oriented Design or Machine Coding rounds — are prevalent at companies like Flipkart, Razorpay, Phonepe, Swiggy, and most Indian product companies at the SDE-2 level and above. This round asks you to design and partially implement a system in 60–90 minutes. Common problems: Design a parking lot system. Design a library management system. Design a snake and ladder game. Design an elevator system. Design a food delivery order management system.
+
+The key principles that separate strong LLD answers from weak ones: Start with requirements gathering — ask clarifying questions before designing anything. Identify entities and their relationships. Define interfaces before implementations. Apply SOLID principles, especially Single Responsibility and Dependency Inversion. Use design patterns where they naturally fit — Strategy pattern for interchangeable algorithms, Observer pattern for event-driven systems, Factory pattern for object creation. Do not over-engineer — the interviewer wants to see clean, extensible code, not a demonstration of every design pattern you know.
+
+In India specifically, machine coding rounds (where you write actual code in a shared editor like CoderPad) are increasingly common. Practice writing clean Java or Python code quickly without an IDE — no auto-complete, no imports suggested for you. The most effective way to prepare is to actually implement 10–15 LLD problems from scratch, time yourself, and then compare your implementation to reference solutions.
+
+## High Level Design (HLD) Round: System Design at Scale
+
+HLD rounds assess your ability to design distributed systems that handle large scale — millions of users, thousands of requests per second, high availability requirements. These rounds are standard for SDE-2 and above at every major Indian product company.
+
+A reliable framework for approaching any HLD problem: Clarify requirements and scale (how many users? read-heavy or write-heavy? consistency requirements?). Estimate capacity (storage, bandwidth, QPS). Define the API. Design the high-level architecture (clients, load balancers, application servers, databases, caches). Dive deep into the most complex or interesting components. Discuss trade-offs explicitly. Common topics that appear repeatedly in Indian HLD interviews: consistent hashing (for distributed caching and sharding), database sharding strategies, the CAP theorem and what it means for your design choices, leader election in distributed systems, rate limiting algorithms (token bucket, sliding window), CDN usage for static assets, and message queue use cases.
+
+The most important skill in HLD is not knowing the answer — it is demonstrating structured thinking and explicitly discussing trade-offs. When you choose PostgreSQL over MongoDB, explain why. When you choose eventual consistency over strong consistency, explain the trade-off. Interviewers want to see that you understand the implications of your choices, not just that you know the right buzzwords.
+
+## Behavioral Round: The Round Where Prepared Candidates Win
+
+At Amazon, the behavioral round is arguably the most important round — Amazon's Leadership Principles are not marketing material, they are the actual rubric against which every answer is evaluated. At other companies (Google, Flipkart, Razorpay), behavioral rounds assess cultural fit, ownership mentality, and interpersonal maturity.
+
+Use the STAR format for every behavioral answer: Situation (set the context), Task (what was your specific responsibility), Action (what you did — in detail, with your specific contribution clearly separated from the team's), Result (what was the measurable outcome). Practice answers for: a time you disagreed with a decision and what you did, a time you failed and what you learned, a time you influenced without authority, a time you dealt with a difficult stakeholder, your most technically challenging project.
+
+For Amazon specifically, map your strongest stories to the 16 Leadership Principles. "Customer Obsession," "Ownership," "Bias for Action," and "Deliver Results" come up most frequently. The mistake most candidates make is having vague answers — "we improved the system" is weak. "We reduced checkout latency from 800ms to 200ms, which increased conversion rate by 12%" is strong.
+
+===
+TOPIC: T6 — Career Progression
+ROLE: SDE (General)
+AUDIENCE: All Levels
+TAGS: career-progression, levels, promotion, sde1-sde2, staff-engineer, india-tech
+===
+
+# SDE Career Progression: From Junior to Principal Engineer
+
+## Understanding the Levels: What Each Title Actually Means
+
+The SDE career ladder in India's tech industry has largely converged around a common structure, influenced heavily by Amazon and Google's well-publicized leveling systems. Understanding what each level actually means — not just the title but the expected behaviors and scope — is essential for intentionally accelerating your growth.
+
+**SDE-1 (0–2 years):** You execute well-defined tasks within a known system. You write code that works, submit it for review, address feedback, and ship. Your scope is a feature within a service. You are expected to be reliable — when you say something will be done by Thursday, it is done by Thursday. You ask for help when you are stuck for more than 2 hours (not 2 days). The primary measurement at SDE-1 is: do you deliver what you commit to, with good quality, within estimated time?
+
+**SDE-2 (2–5 years):** You take ownership of a full feature — end to end, from design to deployment to production monitoring. You break down ambiguous requirements into concrete tasks. You design moderately complex systems correctly the first time (or revise the design based on feedback before building, not after). You review code from SDE-1s and make them better. You are a reliable partner for product managers and designers — they can give you a product requirement and trust that you will ask the right clarifying questions and deliver the right thing. Getting to SDE-2 typically requires 2–4 years at a company, but the fastest engineers clear SDE-1 in 12–18 months.
+
+**Senior SDE (5–8 years):** Your scope expands from a feature to a service or a domain. You design systems that multiple teams depend on. You proactively identify technical risks before they become production incidents. You mentor 2–3 junior engineers and visibly improve their growth trajectory. You influence the technical roadmap — not just execute it. At companies like Amazon and Google, Senior SDE is considered the "career level" — most engineers spend the majority of their career here, and reaching this level is a meaningful achievement.
+
+**Staff Engineer (8–12+ years):** Your scope is an entire product area or a significant technical initiative. You set technical direction for multiple teams. You are the person who gets called when there is a major architectural decision to be made or a production crisis that nobody else can debug. Staff engineers are rare, and their impact is often invisible to others but enormous — they prevent the wrong decisions as much as they enable the right ones.
+
+**Principal Engineer:** Your scope is the entire organization's technical health. You work across all engineering teams. You identify the most important technical problems the company will face in 2–3 years and start solving them today. Principal engineers at Indian unicorns — Flipkart, Razorpay, PhonePe — have shaped the technical architecture that handles hundreds of millions of transactions.
+
+## What Actually Gets You Promoted: The Unwritten Rules
+
+Understanding the formal criteria for promotion is necessary but not sufficient. The engineers who actually get promoted quickly understand the unwritten rules — the behaviors that make you visible and valued in ways that formal criteria do not fully capture.
+
+**Operate one level above your current title before you are given it.** The most reliably promoted engineers are those who consistently behave as if they are already at the next level. An SDE-1 who volunteers to write the design document for a feature they are implementing is demonstrating SDE-2 behavior. An SDE-2 who proactively identifies a performance issue in a neighboring service's code and fixes it is demonstrating Senior SDE behavior. Managers promote people who have already demonstrated they can handle the responsibility — promotion is recognition, not a bet.
+
+**Make your impact visible without being obnoxious about it.** In India's engineering culture, there is often a discomfort with "self-promotion." But there is a meaningful difference between bragging and making your work visible. Write weekly updates to your team about what you shipped and what you learned. When your code prevents a production incident, document it. Present at team all-hands when you have something valuable to share. Your manager can only advocate for your promotion if they know what you've accomplished — do not make them guess.
+
+**Find a sponsor, not just a mentor.** A mentor gives you advice. A sponsor advocates for you in rooms where you are not present. The fastest-promoted engineers in India's top companies all have sponsors — a senior engineer or manager who believes in their potential and actively argues for their promotion during calibration meetings. Sponsors are earned, not assigned. They come from consistent high performance and visible impact over time.
+
+**Fix things that are not your responsibility.** The engineers who get noticed fastest are those who see a broken thing — a flaky test, an undocumented API, a monitoring gap — and fix it without being asked. This behavior signals ownership mentality, which is the single most valued trait at companies like Amazon, Flipkart, and Razorpay.
+
+## Navigating the Indian Tech Job Market for Career Growth
+
+**When to change companies for a promotion.** In India, changing companies is often the fastest path to a title jump. It is common and accepted to join a new company at SDE-2 even if you are currently an SDE-1, if you can demonstrate SDE-2 competence in the interview. The salary bump from switching companies in India typically ranges from 30–60%, compared to 10–20% for internal promotions at most companies. However, changing too frequently (every 12–18 months) creates a resume red flag — companies question your depth of impact and your ability to work through difficult periods.
+
+**The two-year minimum rule.** Stay at each company for at least two years unless the situation is genuinely untenable. In two years, you will have shipped something significant, survived one major production incident, navigated one difficult stakeholder relationship, and learned something deep about the company's tech stack. All of this makes you a more complete engineer and a more compelling interview candidate.
+
+**Lateral moves for growth.** Sometimes the best career move is lateral — staying at the same level but moving to a higher-impact team, a better engineering culture, or a domain that accelerates your learning. An SDE-2 at an e-commerce company who moves laterally to the payments team at the same level learns an enormous amount in one year. The title stays the same; the market value goes up.
+
+===
+TOPIC: T7 — Salary & Market
+ROLE: SDE (General)
+AUDIENCE: All Levels
+TAGS: salary, compensation, india-market, global-market, negotiation, levels
+===
+
+# SDE Salary & Market Intelligence: India + Global
+
+## Fresher Salaries: What to Expect in Your First Job
+
+The salary range for a first SDE job in India is wider than most college students realize, and where you land in that range is almost entirely determined by which company you join and how well you negotiate.
+
+At service companies (TCS, Infosys, Wipro, HCL), fresher salaries for software engineers range from ₹3.5–6.5 LPA. These companies hire in bulk from campus placements, and the salary is largely non-negotiable at this stage. The value is not the salary — it is the first job experience and the time to build skills that get you to a product company.
+
+At mid-market Indian product companies (Urban Company, Meesho, Dunzo, Juspay, BrowserStack, Postman, slice), fresher SDEs typically start at ₹12–25 LPA. These companies hire from tier-1 engineering colleges primarily (IITs, NITs, BITS) but increasingly from tier-2 colleges if the candidate has strong projects and DSA skills. The range is wide because compensation includes base salary, joining bonus, and ESOPs (equity), and the mix varies significantly.
+
+At top Indian unicorns and product companies (Razorpay, CRED, Flipkart, PhonePe, Swiggy, Zepto, Groww), fresher SDEs earn ₹20–45 LPA total compensation. The equity component at these companies can be significant — ESOPs with a 4-year vesting cliff and potential upside at IPO or acquisition. Do not ignore equity in your compensation calculation, but also do not treat unvested equity as money in the bank.
+
+At MNC engineering centres in India (Google, Microsoft, Amazon, Adobe, Atlassian, Uber), fresher SDE compensation ranges from ₹20–50 LPA at joining, with Google and Amazon at the higher end. Amazon's SDE-1 offer in India includes a large joining bonus paid over Year 1 and Year 2, which inflates the first-year compensation but is one-time. Understand the structure of any offer before comparing it to others.
+
+## Mid-Career Salaries (SDE-2 and Senior SDE): Where the Real Money Is
+
+The most dramatic salary growth in an Indian SDE career happens between SDE-1 and Senior SDE, typically between the 2nd and 6th year of work. This is when the decision of which company to work for — and how aggressively to negotiate — has the largest long-term impact.
+
+**SDE-2 salaries in India:**
+- Service companies: ₹8–15 LPA
+- Mid-market product companies: ₹20–40 LPA
+- Top unicorns and product companies: ₹35–70 LPA
+- MNC India offices: ₹40–80 LPA
+
+**Senior SDE salaries in India:**
+- Service companies: ₹15–25 LPA (most senior engineers leave service companies before reaching this level)
+- Mid-market product companies: ₹40–70 LPA
+- Top unicorns: ₹70–120 LPA
+- MNC India offices: ₹80–150 LPA
+
+These ranges include total compensation — base salary, performance bonuses, and equity. The gap between base salary and total compensation at top-tier companies can be 30–50%, primarily driven by equity. An engineer at Google Hyderabad with a total comp of ₹120 LPA might have a base of ₹70 LPA, with the remainder in RSUs (Restricted Stock Units) that vest over four years.
+
+## Global Salary Context: What Indian SDEs Earn Abroad
+
+For Indian engineers who move to the US, UK, Canada, Germany, or Singapore — a path taken by hundreds of thousands of Indian software engineers — the salary numbers are dramatically different.
+
+**United States (San Francisco Bay Area / Seattle / New York):**
+- SDE-1: $150,000–$200,000 total compensation
+- SDE-2: $200,000–$300,000 total compensation
+- Senior SDE: $300,000–$500,000 total compensation
+- Staff Engineer: $400,000–$700,000+ total compensation
+
+At FAANG companies (Meta, Amazon, Apple, Netflix, Google), these numbers are at the higher end of the range. The equity component at US tech companies is substantial — often 30–50% of total compensation in RSUs. The cost of living in San Francisco or Seattle is high (rent alone can be $3,000–5,000/month for a one-bedroom), but the savings potential for an Indian engineer even after adjusting for cost of living is dramatically higher than staying in India.
+
+**Singapore:** SDE-1 at MNCs: SGD $80,000–120,000. Senior SDE: SGD $150,000–250,000. Singapore is the most accessible international market for Indian engineers — visa processing is relatively straightforward, English is the primary business language, and many Indian companies (Grab, Sea, Shopee) have engineering presence there.
+
+**Germany and UK:** These markets are growing for Indian engineers. Salaries are lower than the US — a Senior SDE at a top UK company earns £80,000–150,000 — but the work-life balance is generally better, and the visa process is increasingly streamlined.
+
+## Negotiation: The Skill Most Indian Engineers Never Learn
+
+Salary negotiation is uncomfortable for most Indian engineers — our culture does not encourage it, and we worry about seeming greedy. This discomfort costs the average Indian engineer several lakhs to several crores over a career.
+
+The foundational principle: companies expect negotiation. The first offer is almost never the best offer. Saying "I was expecting something closer to X — is there any flexibility?" is not rude. It is professional. The worst that can happen is they say no, which puts you exactly where you started.
+
+Before negotiating, know your market rate. Use Glassdoor, AmbitionBox, LinkedIn Salary, and Levels.fyi to benchmark compensation for your level, your city, and your company type. Walk into any negotiation knowing the 25th, 50th, and 75th percentile for your role.
+
+Negotiate the total package, not just base salary. Equity (ESOPs or RSUs), joining bonus, performance bonus structure, work-from-home allowance, learning budget, and annual increments are all negotiable at most companies. Sometimes when base salary is fixed, a higher joining bonus or extra equity can achieve the same outcome.
+
+===
+TOPIC: T8 — Transition Guide
+ROLE: SDE (General)
+AUDIENCE: Career Switchers
+TAGS: transition, career-switch, non-tech-to-sde, lateral-move, upskilling
+===
+
+# Transitioning to SDE: How to Switch Careers and Roles Effectively
+
+## Service Company to Product Company: The Most Common Transition in India
+
+This is the most traveled path in Indian tech — an engineer with 2–4 years of experience at TCS, Infosys, or Wipro who wants to move to a product company like Razorpay, Meesho, or Swiggy. This transition is very achievable, but it requires deliberate preparation because the interview bar at product companies is different from anything you've encountered in your service company career.
+
+The core gap is almost always DSA. Service companies do not require strong DSA skills for day-to-day work, and most service company engineers have not practiced competitive programming since college. Rebuilding this skill takes 3–4 months of consistent daily practice — there are no shortcuts. Use LeetCode. Follow the NeetCode 150 problem list. Start with easy problems to build momentum, move to mediums, and solve at least 20–30 hard problems before targeting top companies. The target is not to memorize solutions — it is to recognize patterns.
+
+The second gap is system design. Service company work often involves working on a small piece of a large, legacy system — you may have never designed a system from scratch. Spend 4–6 weeks specifically on system design preparation. Read the first half of DDIA. Practice designing 10 common systems. Watch Gaurav Sen's system design videos.
+
+Do not hide your service company background. Many product companies explicitly value candidates with enterprise experience — they understand reliability, production operations, and stakeholder management in ways that direct college hires sometimes do not. Frame your service company experience in product terms: "I maintained a system handling X transactions per day" rather than "I worked on a banking project."
+
+## Non-CS Graduates Making the Switch to SDE
+
+Every year, thousands of engineers in India from non-CS backgrounds — mechanical, electrical, civil, chemical — successfully transition to software engineering. The path is harder but it is real, and it is increasingly well-understood.
+
+The minimum viable skill set to get a first software job is: proficiency in one programming language, basic DSA (enough for SDE-1 interviews at mid-market companies), a portfolio of 2–3 complete projects, and basic web or backend development skills. Most successful non-CS switchers spend 6–12 months building this skill set before starting to apply.
+
+Bootcamps in India have become more viable — programs like Newton School, Masai School, and Scaler offer structured curricula with placement support. The quality varies, and the outcomes depend heavily on your effort. A bootcamp does not get you a job — it gives you a structure. You get yourself a job through the code you write and the problems you solve.
+
+The biggest advantage of a non-CS background is often underestimated: domain knowledge. A mechanical engineer who becomes a software engineer and joins an industrial IoT startup or an automotive tech company brings deep domain context that CS graduates lack. Lean into this. Target companies where your original domain is the product — fintech if you studied economics, health tech if you have a life sciences background, edtech if you studied education.
+
+## Switching Specializations Within SDE: Backend to DevOps, SDE to ML, etc.
+
+After 3–5 years as a generalist SDE, many engineers want to specialize. The most common transitions within engineering are: backend SDE to DevOps/Platform Engineering, backend SDE to ML Engineering, and SDE to Engineering Management.
+
+**SDE to DevOps/Platform Engineering:** If you find yourself spending more time on infrastructure, deployment pipelines, and developer tooling than on application code — and you enjoy it — this is a natural path. Required skills to develop: deep Kubernetes knowledge, Terraform for infrastructure as code, advanced Linux system administration, networking fundamentals (TCP/IP, DNS, load balancers at a deep level), and observability tooling. This is a growing and well-compensated specialization in India, particularly at companies with large engineering teams.
+
+**SDE to ML Engineering:** ML Engineers are not data scientists — they are software engineers who build the infrastructure that makes ML models work in production. Required additions to your SDE skillset: Python proficiency (you likely already have this), basic ML fundamentals (supervised vs unsupervised learning, model training, evaluation metrics), MLflow or similar for experiment tracking, experience with one deep learning framework (PyTorch is the industry standard in 2024), and distributed training basics. This transition typically takes 12–18 months of deliberate skilling and is best done with a project or role that bridges the two worlds.
+
+**SDE to Engineering Management:** This is a topic unto itself, but the short version is: the best first-time managers in India are those who go into management because they want to multiply the impact of their team — not because they are tired of coding or want the status. Good first-time managers continue to stay technically relevant (reading design documents, reviewing architecture, understanding the codebase at a high level) while shifting their primary output from code to decisions, culture, and talent development.
+
+## Your First Week Action Plan in a New SDE Role
+
+Whether you are a fresher joining your first company or a senior engineer joining after a move, the first week sets the tone for everything that follows.
+
+Day 1–2: Set up your development environment completely without asking for help unless you are genuinely stuck. Reading the setup documentation carefully and following it is itself a signal of your attention to detail. Join every relevant Slack or Teams channel. Read the team wiki and any available architecture documentation.
+
+Day 3–4: Read the last 20 merged pull requests in your primary codebase. This gives you more insight into the team's working style, code quality standards, and recent priorities than any onboarding document. Take notes on patterns you notice.
+
+Day 5: Make one small code change — a bug fix, a documentation improvement, a minor refactor. Go through the entire PR process: open the PR, address feedback, merge. This gives you end-to-end familiarity with the team's deployment pipeline before you are under any delivery pressure.
+
+Week 2: Introduce yourself in the team all-hands or standup. Find the engineer who joined 6–12 months before you — they remember what was confusing at the beginning and are usually happy to share what they wish they had known. Their informal knowledge is more valuable than any formal onboarding document.
+
